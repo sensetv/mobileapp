@@ -48,10 +48,7 @@ namespace Toggl.Tests.UI
             app.EnterText(email);
             app.Tap(Login.PasswordText);
             app.EnterText($"{password}123456");
-
-            var button = app.Query(Login.LoginButton).FirstOrDefault();
-            var isButtonDisabled = !button.Enabled;
-            Assert.AreEqual(true, isButtonDisabled);
+            app.CheckThatLoginButtonIsDisabled();
         }
 
         [Test]
