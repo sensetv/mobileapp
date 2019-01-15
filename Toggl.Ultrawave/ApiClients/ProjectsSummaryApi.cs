@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Reactive.Linq;
 using Newtonsoft.Json;
 using Toggl.Multivac;
@@ -57,8 +58,8 @@ namespace Toggl.Ultrawave.ApiClients
 
             public ProjectsSummaryParameters(DateTimeOffset startDate, DateTimeOffset? endDate)
             {
-                StartDate = startDate.ToString("yyyy-MM-dd");
-                EndDate = endDate?.ToString("yyyy-MM-dd");
+                StartDate = startDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                EndDate = endDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             }
         }
     }

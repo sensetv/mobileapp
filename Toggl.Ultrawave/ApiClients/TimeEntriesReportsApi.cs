@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using System.Reactive.Linq;
 using Toggl.Multivac.Models.Reports;
 using System.Collections.Generic;
+using System.Globalization;
 using Newtonsoft.Json.Converters;
 using Toggl.Multivac.Extensions;
 
@@ -79,8 +80,8 @@ namespace Toggl.Ultrawave.ApiClients
             public TimeEntriesTotalsParameters(long userId, DateTimeOffset startDate, DateTimeOffset? endDate)
             {
                 this.userId = userId;
-                StartDate = startDate.ToString("yyyy-MM-dd");
-                EndDate = endDate?.ToString("yyyy-MM-dd");
+                StartDate = startDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                EndDate = endDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             }
         }
 

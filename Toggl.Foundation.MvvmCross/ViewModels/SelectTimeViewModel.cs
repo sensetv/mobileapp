@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using MvvmCross.Commands;
@@ -66,10 +67,10 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public DateTimeOffset StopTimeOrCurrent => StopTime ?? CurrentDateTime;
 
         public string StartTimeAmPmLabel =>
-            TimeFormat.IsTwentyFourHoursFormat ? "" : StartTime.ToString("tt");
-       
+            TimeFormat.IsTwentyFourHoursFormat ? "" : StartTime.ToString("tt", CultureInfo.InvariantCulture);
+
         public string StopTimeAmPmLabel =>
-            TimeFormat.IsTwentyFourHoursFormat ? "" : StopTimeOrCurrent.ToString("tt");
+            TimeFormat.IsTwentyFourHoursFormat ? "" : StopTimeOrCurrent.ToString("tt", CultureInfo.InvariantCulture);
 
         public IObservable<TemporalInconsistency> TemporalInconsistencyDetected { get; }
         public IObservable<bool> IsCalendarViewObservable { get; }

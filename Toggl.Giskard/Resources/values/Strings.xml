@@ -144,7 +144,6 @@ understand and agree to Toggl\'s</string>
     <string name="SelectColorTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SelectColorTemplateSelector, Toggl.Giskard</string>
     <string name="SelectCountryTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SelectCountryTemplateSelector, Toggl.Giskard</string>
     <string name="SelectDateFormatTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SelectDateFormatTemplateSelector, Toggl.Giskard</string>
-    <string name="SelectDurationFormatTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SelectDurationFormatTemplateSelector, Toggl.Giskard</string>
     <string name="SelectProjectTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SelectProjectTemplateSelector, Toggl.Giskard</string>
     <string name="SelectTagsTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SelectTagsTemplateSelector, Toggl.Giskard</string>
     <string name="SelectWorkspaceTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SelectWorkspaceTemplateSelector, Toggl.Giskard</string>

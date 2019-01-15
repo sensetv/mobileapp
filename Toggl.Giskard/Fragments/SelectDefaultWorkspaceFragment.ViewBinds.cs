@@ -9,7 +9,7 @@ namespace Toggl.Giskard.Fragments
 
         public void InitializeViews(View rootView)
         {
-            recyclerView = rootView.FindViewById<RecyclerView>(Resource.Id.SelectDefaultWorkspaceRecyclerView);
+            recyclerView = rootView.FindViewById<RecyclerView>(Resource.Id.SelectWorkspaceRecyclerView);
         }
     }
 }

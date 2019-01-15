@@ -3,14 +3,15 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
-using MvvmCross.Commands;
 using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
-using PropertyChanged;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
-using Toggl.Foundation.Models.Interfaces;
+using Toggl.Foundation.Extensions;
+using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Parameters;
+using Toggl.Foundation.MvvmCross.Transformations;
+using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using static Toggl.Foundation.Helper.Constants;
@@ -22,171 +23,144 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
     {
         private readonly ITimeService timeService;
         private readonly IMvxNavigationService navigationService;
-        private readonly ITogglDataSource dataSource;
         private readonly IAnalyticsService analyticsService;
 
         private IDisposable runningTimeEntryDisposable;
-        private IDisposable preferencesDisposable;
-
         private DurationParameter defaultResult;
-
-        private DurationFormat durationFormat;
-
-        private EditMode editMode;
-
         private EditDurationEvent analyticsEvent;
 
-        [DependsOn(nameof(IsRunning))]
-        public DurationFormat DurationFormat => IsRunning ? DurationFormat.Improved : durationFormat;
+        private BehaviorSubject<DateTimeOffset> startTime = new BehaviorSubject<DateTimeOffset>(default(DateTimeOffset));
+        private BehaviorSubject<DateTimeOffset> stopTime = new BehaviorSubject<DateTimeOffset>(default(DateTimeOffset));
+        private BehaviorSubject<EditMode> editMode = new BehaviorSubject<EditMode>(EditMode.None);
+        private BehaviorSubject<bool> isRunning = new BehaviorSubject<bool>(false);
 
-        public DateFormat DateFormat { get; private set; }
+        private BehaviorSubject<DateTimeOffset> minimumDateTime = new BehaviorSubject<DateTimeOffset>(default(DateTimeOffset));
+        private BehaviorSubject<DateTimeOffset> maximumDateTime = new BehaviorSubject<DateTimeOffset>(default(DateTimeOffset));
 
-        public TimeFormat TimeFormat { get; private set; }
+        public UIAction Save { get; }
+        public UIAction Close { get; }
+        public UIAction EditStartTime { get; }
+        public UIAction EditStopTime { get; }
+        public UIAction StopEditingTime { get; }
+        public InputAction<DateTimeOffset> ChangeStartTime { get; }
+        public InputAction<DateTimeOffset> ChangeStopTime { get; }
+        public InputAction<DateTimeOffset> ChangeActiveTime { get; }
+        public InputAction<TimeSpan> ChangeDuration { get; }
 
-        public bool IsRunning { get; private set; }
+        public IObservable<DateTimeOffset> StartTime { get; }
+        public IObservable<DateTimeOffset> StopTime { get; }
+        public IObservable<TimeSpan> Duration { get; }
+        public IObservable<bool> IsEditingTime { get; }
+        public IObservable<bool> IsEditingStartTime { get; }
+        public IObservable<bool> IsEditingStopTime { get; }
 
-        public DateTimeOffset StartTime { get; private set; }
+        public IObservable<string> StartDateString { get; }
+        public IObservable<string> StartTimeString { get; }
+        public IObservable<string> StopDateString { get; }
+        public IObservable<string> StopTimeString { get; }
+        public IObservable<string> DurationString { get; }
+        public IObservable<TimeFormat> TimeFormat { get; }
+        public IObservable<bool> IsRunning { get; }
 
-        public DateTimeOffset StopTime { get; private set; }
+        public IObservable<DateTimeOffset> MinimumDateTime { get; }
+        public IObservable<DateTimeOffset> MaximumDateTime { get; }
+
+        public IObservable<DateTimeOffset> MinimumStartTime { get; }
+        public IObservable<DateTimeOffset> MaximumStartTime { get; }
+        public IObservable<DateTimeOffset> MinimumStopTime { get; }
+        public IObservable<DateTimeOffset> MaximumStopTime { get; }
 
         public bool IsDurationInitiallyFocused { get; private set; }
 
-        [DependsOn(nameof(StartTime), nameof(StopTime))]
-        public TimeSpan Duration
-        {
-            get => StopTime - StartTime;
-            set
-            {
-                if (Duration == value) return;
-
-                onDurationChanged(value);
-            }
-        }
-
-        public bool IsEditingTime => IsEditingStopTime || IsEditingStartTime;
-
-        public bool IsEditingStartTime => editMode == EditMode.StartTime;
-
-        public bool IsEditingStopTime => editMode == EditMode.EndTime;
-
-        public DateTimeOffset EditedTime
-        {
-            get
-            {
-                switch (editMode)
-                {
-                    case EditMode.StartTime:
-                        return StartTime;
-
-                    case EditMode.EndTime:
-                        return StopTime;
-
-                    default:
-                        // any value between start and end time can be returned here
-                        // this constraint is to avoid invalid dates with the date picker
-                        return StartTime;
-                }
-            }
-
-            set
-            {
-                if (!IsEditingTime) return;
-
-                var valueInRange = value.Clamp(MinimumDateTime, MaximumDateTime);
-
-                switch (editMode)
-                {
-                    case EditMode.StartTime:
-                        StartTime = valueInRange;
-                        break;
-
-                    case EditMode.EndTime:
-                        StopTime = valueInRange;
-                        break;
-                }
-            }
-        }
-
-        private Subject<Unit> startTimeChangingSubject = new Subject<Unit>();
-        public IObservable<Unit> StartTimeChanging
-            => startTimeChangingSubject.AsObservable();
-
-        public DateTime MinimumDateTime { get; private set; }
-
-        public DateTime MaximumDateTime { get; private set; }
-
-        public DateTimeOffset MinimumStartTime => StopTime.AddHours(-MaxTimeEntryDurationInHours);
-
-        public DateTimeOffset MaximumStartTime => StopTime;
-
-        public DateTimeOffset MinimumStopTime => StartTime;
-
-        public DateTimeOffset MaximumStopTime => StartTime.AddHours(MaxTimeEntryDurationInHours);
-
-        public IMvxAsyncCommand SaveCommand { get; }
-
-        public IMvxAsyncCommand CloseCommand { get; }
-
-        public IMvxCommand EditStartTimeCommand { get; }
-
-        public IMvxCommand EditStopTimeCommand { get; }
-
-        public IMvxCommand StopEditingTimeCommand { get; }
-
-        public EditDurationViewModel(IMvxNavigationService navigationService, ITimeService timeService, ITogglDataSource dataSource, IAnalyticsService analyticsService)
+        public EditDurationViewModel(IMvxNavigationService navigationService, ITimeService timeService, ITogglDataSource dataSource, IAnalyticsService analyticsService, IRxActionFactory rxActionFactory, ISchedulerProvider schedulerProvider)
         {
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
+            Ensure.Argument.IsNotNull(schedulerProvider, nameof(schedulerProvider));
 
             this.timeService = timeService;
             this.navigationService = navigationService;
-            this.dataSource = dataSource;
             this.analyticsService = analyticsService;
 
-            SaveCommand = new MvxAsyncCommand(save);
-            CloseCommand = new MvxAsyncCommand(close);
+            Save = rxActionFactory.FromAsync(save);
+            Close = rxActionFactory.FromAsync(close);
+            EditStartTime = rxActionFactory.FromAction(editStartTime);
+            EditStopTime = rxActionFactory.FromAction(editStopTime);
+            StopEditingTime = rxActionFactory.FromAction(stopEditingTime);
+            ChangeStartTime = rxActionFactory.FromAction<DateTimeOffset>(startTime.OnNext);
+            ChangeStopTime = rxActionFactory.FromAction<DateTimeOffset>(stopTime.OnNext);
+            ChangeActiveTime = rxActionFactory.FromAction<DateTimeOffset>(changeActiveTime);
+            ChangeDuration = rxActionFactory.FromAction<TimeSpan>(changeDuration);
 
-            EditStartTimeCommand = new MvxCommand(editStartTime);
-            EditStopTimeCommand = new MvxCommand(editStopTime);
-            StopEditingTimeCommand = new MvxCommand(stopEditingTime);
+            var start = startTime.Where(v => v != default(DateTimeOffset));
+            var stop = stopTime.Where(v => v != default(DateTimeOffset));
+            var duration = Observable.CombineLatest(start, stop, (startValue, stopValue) => stopValue - startValue);
+
+            StartTime = start.AsDriver(schedulerProvider);
+            StopTime = stop.AsDriver(schedulerProvider);
+            Duration = duration.AsDriver(schedulerProvider);
+
+            IsEditingTime = editMode.Select(v => v != EditMode.None).AsDriver(schedulerProvider);
+            IsEditingStartTime = editMode.Select(v => v == EditMode.StartTime).AsDriver(schedulerProvider);
+            IsEditingStopTime = editMode.Select(v => v == EditMode.EndTime).AsDriver(schedulerProvider);
+
+            var preferences = dataSource.Preferences.Current.ShareReplay();
+            var dateFormat = preferences.Select(p => p.DateFormat);
+            var timeFormat = preferences.Select(p => p.TimeOfDayFormat);
+            var durationFormat = preferences.Select(p => p.DurationFormat);
+
+            StartDateString = Observable.CombineLatest(start, dateFormat, toFormattedString)
+                .AsDriver(schedulerProvider);
+            StartTimeString = Observable.CombineLatest(start, timeFormat, toFormattedString)
+                .AsDriver(schedulerProvider);
+            StopDateString = Observable.CombineLatest(stop, dateFormat, toFormattedString)
+                .AsDriver(schedulerProvider);
+            StopTimeString = Observable.CombineLatest(stop, timeFormat, toFormattedString)
+                .AsDriver(schedulerProvider);
+            DurationString = Observable.CombineLatest(duration, durationFormat, toFormattedString);
+            TimeFormat = timeFormat.AsDriver(schedulerProvider);
+
+            IsRunning = isRunning.AsDriver(schedulerProvider);
+
+            MinimumDateTime = minimumDateTime.AsDriver(schedulerProvider);
+            MaximumDateTime = maximumDateTime.AsDriver(schedulerProvider);
+
+            MinimumStartTime = stopTime.Select(v => v.AddHours(-MaxTimeEntryDurationInHours)).AsDriver(schedulerProvider);
+            MaximumStartTime = stopTime.AsDriver(schedulerProvider);
+            MinimumStopTime = startTime.AsDriver(schedulerProvider);
+            MaximumStopTime = startTime.Select(v => v.AddHours(MaxTimeEntryDurationInHours)).AsDriver(schedulerProvider);
         }
 
         public override void Prepare(EditDurationParameters parameter)
         {
             defaultResult = parameter.DurationParam;
-            IsRunning = defaultResult.Duration.HasValue == false;
+            isRunning.OnNext(defaultResult.Duration.HasValue == false);
 
-            analyticsEvent = new EditDurationEvent(IsRunning,
+            analyticsEvent = new EditDurationEvent(isRunning.Value,
                 parameter.IsStartingNewEntry
                     ? EditDurationEvent.NavigationOrigin.Start
                     : EditDurationEvent.NavigationOrigin.Edit);
 
-            if (IsRunning)
+            if (isRunning.Value)
             {
                 runningTimeEntryDisposable = timeService.CurrentDateTimeObservable
-                           .Subscribe(currentTime => StopTime = currentTime);
+                   .Subscribe(currentTime => stopTime.OnNext(currentTime));
             }
 
-            StartTime = parameter.DurationParam.Start;
-            StopTime = parameter.DurationParam.Duration.HasValue
-                ? StartTime + parameter.DurationParam.Duration.Value
+            var start = parameter.DurationParam.Start;
+            var stop = parameter.DurationParam.Duration.HasValue
+                ? start + parameter.DurationParam.Duration.Value
                 : timeService.CurrentDateTime;
 
-            MinimumDateTime = StartTime.DateTime;
-            MaximumDateTime = StopTime.DateTime;
+            startTime.OnNext(start);
+            stopTime.OnNext(stop);
+
+            minimumDateTime.OnNext(start);
+            maximumDateTime.OnNext(stop);
             IsDurationInitiallyFocused = parameter.IsDurationInitiallyFocused;
-        }
-
-        public override async Task Initialize()
-        {
-            await base.Initialize();
-
-            preferencesDisposable = dataSource.Preferences.Current
-                .Subscribe(onPreferencesChanged);
-
-            editMode = EditMode.None;
         }
 
         public void TimeEditedWithSource(EditTimeSource source)
@@ -205,90 +179,102 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             analyticsEvent = analyticsEvent.With(result: EditDurationEvent.Result.Save);
             analyticsService.Track(analyticsEvent);
-            var result = DurationParameter.WithStartAndDuration(StartTime, IsRunning ? (TimeSpan?)null : Duration);
+            var duration = stopTime.Value - startTime.Value;
+            var result = DurationParameter.WithStartAndDuration(startTime.Value, isRunning.Value ? (TimeSpan?)null : duration);
             return navigationService.Close(this, result);
         }
 
         private void editStartTime()
         {
-            if (IsEditingStartTime)
+            if (editMode.Value == EditMode.StartTime)
             {
-                editMode = EditMode.None;
+                editMode.OnNext(EditMode.None);
             }
             else
             {
-                startTimeChangingSubject.OnNext(Unit.Default);
-                MinimumDateTime = MinimumStartTime.LocalDateTime;
-                MaximumDateTime = MaximumStartTime.LocalDateTime;
+                minimumDateTime.OnNext(stopTime.Value.AddHours(-MaxTimeEntryDurationInHours));
+                maximumDateTime.OnNext(stopTime.Value);
 
-                editMode = EditMode.StartTime;
+                editMode.OnNext(EditMode.StartTime);
             }
-
-            RaisePropertyChanged(nameof(IsEditingStartTime));
-            RaisePropertyChanged(nameof(IsEditingStopTime));
-            RaisePropertyChanged(nameof(IsEditingTime));
-            RaisePropertyChanged(nameof(EditedTime));
         }
 
         private void editStopTime()
         {
-            if (IsRunning)
+            if (isRunning.Value)
             {
                 runningTimeEntryDisposable?.Dispose();
-                StopTime = timeService.CurrentDateTime;
-                IsRunning = false;
+                stopTime.OnNext(timeService.CurrentDateTime);
+                isRunning.OnNext(false);
                 analyticsEvent = analyticsEvent.With(stoppedRunningEntry: true);
             }
 
-            if (IsEditingStopTime)
+            if (editMode.Value == EditMode.EndTime)
             {
-                editMode = EditMode.None;
+                editMode.OnNext(EditMode.None);
             }
             else
             {
-                MinimumDateTime = MinimumStopTime.LocalDateTime;
-                MaximumDateTime = MaximumStopTime.LocalDateTime;
+                minimumDateTime.OnNext(startTime.Value);
+                maximumDateTime.OnNext(startTime.Value.AddHours(MaxTimeEntryDurationInHours));
 
-                editMode = EditMode.EndTime;
+                editMode.OnNext(EditMode.EndTime);
             }
-
-            RaisePropertyChanged(nameof(IsEditingStartTime));
-            RaisePropertyChanged(nameof(IsEditingStopTime));
-            RaisePropertyChanged(nameof(IsEditingTime));
-            RaisePropertyChanged(nameof(EditedTime));
         }
 
         private void stopEditingTime()
         {
-            editMode = EditMode.None;
+            if (editMode.Value == EditMode.None)
+            {
+                return;
+            }
 
-            RaisePropertyChanged(nameof(IsEditingStartTime));
-            RaisePropertyChanged(nameof(IsEditingStopTime));
-            RaisePropertyChanged(nameof(IsEditingTime));
+            editMode.OnNext(EditMode.None);
         }
 
-        private void onDurationChanged(TimeSpan changedDuration)
+        private void changeActiveTime(DateTimeOffset newTime)
         {
-            if (IsRunning)
-                StartTime = timeService.CurrentDateTime - changedDuration;
+            var valueInRange = newTime.Clamp(minimumDateTime.Value, maximumDateTime.Value);
 
-            StopTime = StartTime + changedDuration;
+            switch (editMode.Value)
+            {
+                case EditMode.StartTime:
+                    startTime.OnNext(valueInRange);
+                    break;
+
+                case EditMode.EndTime:
+                    stopTime.OnNext(valueInRange);
+                    break;
+            }
         }
 
-        private void onPreferencesChanged(IThreadSafePreferences preferences)
+        private void changeDuration(TimeSpan changedDuration)
         {
-            durationFormat = preferences.DurationFormat;
-            DateFormat = preferences.DateFormat;
-            TimeFormat = preferences.TimeOfDayFormat;
+            if (isRunning.Value)
+                startTime.OnNext(timeService.CurrentDateTime - changedDuration);
 
-            RaisePropertyChanged(nameof(DurationFormat));
+            stopTime.OnNext(startTime.Value + changedDuration);
+        }
+
+        private string toFormattedString(DateTimeOffset dateTimeOffset, TimeFormat timeFormat)
+        {
+            return DateTimeToFormattedString.Convert(dateTimeOffset, timeFormat.Format);
+        }
+
+        private string toFormattedString(DateTimeOffset dateTimeOffset, DateFormat dateFormat)
+        {
+            return DateTimeToFormattedString.Convert(dateTimeOffset, dateFormat.Short);
+        }
+
+        private string toFormattedString(TimeSpan timeSpan, DurationFormat format)
+        {
+            return timeSpan.ToFormattedString(format);
         }
 
         public override void ViewDestroy(bool viewFinishing)
         {
             base.ViewDestroy(viewFinishing);
             runningTimeEntryDisposable?.Dispose();
-            preferencesDisposable?.Dispose();
         }
 
         private enum EditMode

@@ -668,9 +668,11 @@
     <Compile Include="Cells\BaseCollectionViewCell.cs" />
     <Compile Include="Extensions\Binders\ReactiveTableViewBinder.cs" />
     <Compile Include="Extensions\IntentPeriod.cs" />
+    <Compile Include="Extensions\Reactive\DurationFieldExtensions.cs" />
     <Compile Include="Extensions\Reactive\HueSaturationPickerViewExtensions.cs" />
     <Compile Include="Extensions\Reactive\UIScrollViewExtensions.cs" />
     <Compile Include="Extensions\Reactive\UISliderExtensions.cs" />
+    <Compile Include="Extensions\Reactive\WheelForegroundViewExtensions.cs" />
     <Compile Include="Extensions\SectionedIndexExtensions.cs" />
     <Compile Include="Services\PermissionsServiceIos.cs" />
     <Compile Include="Services\CalendarServiceIos.cs" />
@@ -724,6 +726,7 @@
     <Compile Include="ViewControllers\StartTimeEntryViewController.designer.cs">
       <DependentUpon>StartTimeEntryViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="ViewSources\WorkspaceTableViewSource.cs" />
     <Compile Include="Views\ActivityIndicatorView.cs" />
     <Compile Include="Presentation\Attributes\ModalCardPresentationAttribute.cs" />
     <Compile Include="Presentation\Attributes\NestedChildPresentationAttribute.cs" />
@@ -815,7 +818,6 @@
     <Compile Include="ViewControllers\SelectWorkspaceViewController.designer.cs">
       <DependentUpon>SelectWorkspaceViewController.cs</DependentUpon>
     </Compile>
-    <Compile Include="ViewSources\WorkspaceTableViewSource.cs" />
     <Compile Include="ViewSources\ClientTableViewSource.cs" />
     <Compile Include="ViewControllers\SelectClientViewController.cs" />
     <Compile Include="ViewControllers\SelectClientViewController.designer.cs">
@@ -950,7 +952,6 @@
     <Compile Include="Binding\SpiderOnARopeViewIsVisibleTargetBinding.cs" />
     <Compile Include="ApplicationShortcutCreator.cs" />
     <Compile Include="Extensions\PointExtensions.cs" />
-    <Compile Include="Services\MailServiceIos.cs" />
     <Compile Include="Autocomplete\TokenTextAttachment.cs" />
     <Compile Include="Autocomplete\AutocompleteExtensions.cs" />
     <Compile Include="Services\AnalyticsServiceIos.cs" />
@@ -1178,6 +1179,7 @@
     <Compile Include="Extensions\IThreadSafeTimeEntryExtensions.cs" />
     <Compile Include="PlatformInfoIos.cs" />
     <Compile Include="Services\BackgroundSyncServiceIos.cs" />
+    <Compile Include="Extensions\TimeSpanExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toggl.Foundation.MvvmCross\Toggl.Foundation.MvvmCross.csproj">

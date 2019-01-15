@@ -1,28 +1,46 @@
 ﻿using System;
+using System.Linq;
+using System.Reactive.Disposables;
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
+using Android.Support.V7.Widget;
 using Android.Views;
 using MvvmCross.Droid.Support.V4;
-using MvvmCross.Platforms.Android.Binding.BindingContext;
 using MvvmCross.Platforms.Android.Presenters.Attributes;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Giskard.Adapters;
 using Toggl.Giskard.Extensions;
+using Toggl.Multivac.Extensions;
 
 namespace Toggl.Giskard.Fragments
 {
     [MvxDialogFragmentPresentation(AddToBackStack = true)]
-    public sealed class SelectDurationFormatFragment : MvxDialogFragment<SelectDurationFormatViewModel>
+    public sealed partial class SelectDurationFormatFragment : MvxDialogFragment<SelectDurationFormatViewModel>
     {
+        private readonly CompositeDisposable disposeBag  = new CompositeDisposable();
+
         public SelectDurationFormatFragment() { }
 
         public SelectDurationFormatFragment(IntPtr javaReference, JniHandleOwnership transfer)
             : base (javaReference, transfer) { }
-        
+
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             base.OnCreateView(inflater, container, savedInstanceState);
-            var view = this.BindingInflate(Resource.Layout.SelectDurationFormatFragment, null);
+            var view = inflater.Inflate(Resource.Layout.SelectDurationFormatFragment, null);
+
+            initializeViews(view);
+
+            recyclerView.SetLayoutManager(new LinearLayoutManager(Context));
+            selectDurationRecyclerAdapter = new SelectDurationFormatRecyclerAdapter();
+            selectDurationRecyclerAdapter.Items = ViewModel.DurationFormats.ToList();
+            recyclerView.SetAdapter(selectDurationRecyclerAdapter);
+
+            selectDurationRecyclerAdapter.ItemTapObservable
+                .Subscribe(ViewModel.SelectDurationFormat.Inputs)
+                .DisposedBy(disposeBag);
+
             return view;
         }
 
@@ -35,7 +53,14 @@ namespace Toggl.Giskard.Fragments
 
         public override void OnCancel(IDialogInterface dialog)
         {
-            ViewModel.CloseCommand.ExecuteAsync();
+            ViewModel.Close.Execute();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (!disposing) return;
+            disposeBag.Dispose();
         }
     }
 }

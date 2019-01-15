@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using Toggl.Multivac;
+using static System.FormattableString;
 
 namespace Toggl.Foundation.Extensions
 {
@@ -26,17 +27,17 @@ namespace Toggl.Foundation.Extensions
             => string.Format(CultureInfo.InvariantCulture, "{0:00.00} {1}", value.TotalHours, Resources.UnitHour);
 
         private static string convertToImprovedFormat(TimeSpan value)
-            => $@"{(int)value.TotalHours}:{value:mm\:ss}";
+            => Invariant($@"{(int)value.TotalHours}:{value:mm\:ss}");
 
         private static string convertToClassicFormat(TimeSpan value)
         {
             if (value >= TimeSpan.FromHours(1))
-                return $@"{(int)value.TotalHours:00}:{value:mm\:ss}";
+                return Invariant($@"{(int)value.TotalHours:00}:{value:mm\:ss}");
 
             if (value >= TimeSpan.FromMinutes(1))
-                return $@"{value:mm\:ss} {Resources.UnitMin}";
+                return Invariant($@"{value:mm\:ss} {Resources.UnitMin}");
 
-            return $"{value:ss} {Resources.UnitSecond}";
+            return Invariant($"{value:ss} {Resources.UnitSecond}");
         }
     }
 }

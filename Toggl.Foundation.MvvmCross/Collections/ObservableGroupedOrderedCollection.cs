@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Toggl.Foundation.MvvmCross.Collections.Changes;
-using Toggl.Multivac;
 
 namespace Toggl.Foundation.MvvmCross.Collections
 {
@@ -65,7 +64,6 @@ namespace Toggl.Foundation.MvvmCross.Collections
         public (SectionedIndex index, bool needsNewSection) InsertItem(TItem item)
         {
             var (index, needsNewSection) = collection.InsertItem(item);
-
 
             if (needsNewSection)
             {

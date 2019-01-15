@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Toggl.Multivac.Extensions;
 
@@ -8,7 +9,7 @@ namespace Toggl.Foundation.MvvmCross.Collections
 {
     public class GroupedOrderedCollection<TItem> : IGroupOrderedCollection<TItem>
     {
-        private List<List<TItem>> sections;
+        private ImmutableList<ImmutableList<TItem>> sections;
         private Func<TItem, IComparable> indexKey;
         private Func<TItem, IComparable> orderingKey;
         private Func<TItem, IComparable> groupingKey;
@@ -34,7 +35,7 @@ namespace Toggl.Foundation.MvvmCross.Collections
             this.groupingKey = groupingKey;
             this.isDescending = isDescending;
 
-            sections = new List<List<TItem>> { };
+            sections = ImmutableList<ImmutableList<TItem>>.Empty;
         }
 
         public IEnumerator<IReadOnlyList<TItem>> GetEnumerator()
@@ -86,14 +87,15 @@ namespace Toggl.Foundation.MvvmCross.Collections
             if (sectionIndex == -1)
             {
                 var insertionIndex = sections.FindLastIndex(g => areInOrder(g.First(), item, groupingKey));
-                List<TItem> list = new List<TItem> { item };
-                sections.Insert(insertionIndex + 1, list); // when there are no sections the insertionIndex will be -1
+                var list = ImmutableList.Create(item);
+                sections = sections.Insert(insertionIndex + 1, list); // when there are no sections the insertionIndex will be -1
                 return (new SectionedIndex(insertionIndex + 1, 0), true);
             }
 
             var rowIndex = sections[sectionIndex].FindLastIndex(i => areInOrder(i, item, orderingKey));
-            sections[sectionIndex].Insert(rowIndex + 1, item); // when the section is empty, the rowIndex will be -1
-            return (new SectionedIndex(sectionIndex, rowIndex + 1 ), false);
+            var affectedSection = sections[sectionIndex].Insert(rowIndex + 1, item);
+            sections = sections.Replace(sections[sectionIndex], affectedSection); // when the section is empty, the rowIndex will be -1
+            return (new SectionedIndex(sectionIndex, rowIndex + 1), false);
         }
 
         public SectionedIndex? UpdateItem(IComparable key, TItem item)
@@ -105,15 +107,15 @@ namespace Toggl.Foundation.MvvmCross.Collections
 
             RemoveItemAt(oldIndex.Value.Section, oldIndex.Value.Row);
             return InsertItem(item).index;
-         }
+        }
 
         public void ReplaceWith(IEnumerable<TItem> items)
         {
             sections = items
                 .GroupBy(groupingKey)
-                .Select(g => g.OrderBy(orderingKey, isDescending).ToList())
+                .Select(g => g.OrderBy(orderingKey, isDescending).ToImmutableList())
                 .OrderBy(g => groupingKey(g.First()), isDescending)
-                .ToList();
+                .ToImmutableList();
         }
 
         public TItem RemoveItemAt(int section, int row)
@@ -132,10 +134,13 @@ namespace Toggl.Foundation.MvvmCross.Collections
 
         private void removeItemFromSection(int section, int row)
         {
-            sections[section].RemoveAt(row);
+            var affectedSection = sections[section].RemoveAt(row);
+            sections = sections.Replace(sections[section], affectedSection);
 
             if (sections[section].Count == 0)
-                sections.RemoveAt(section);
+            {
+                sections = sections.RemoveAt(section);
+            }
         }
     }
 }

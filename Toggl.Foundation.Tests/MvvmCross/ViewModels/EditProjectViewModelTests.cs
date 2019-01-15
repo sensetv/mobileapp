@@ -128,7 +128,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 setupChangingWorkspaceScenario();
 
                 NavigationService
-                    .Navigate<SelectWorkspaceViewModel, WorkspaceParameters, long>(Arg.Any<WorkspaceParameters>())
+                    .Navigate<SelectWorkspaceViewModel, long, long>(Arg.Any<long>())
                     .Returns(Task.FromResult(1L));
 
                 ViewModel.Prepare(projectName);
@@ -557,7 +557,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         .Execute()
                         .Returns(Observable.Return(defaultWorkspace));
                     NavigationService
-                       .Navigate<SelectWorkspaceViewModel, WorkspaceParameters, long>(Arg.Any<WorkspaceParameters>())
+                       .Navigate<SelectWorkspaceViewModel, long, long>(Arg.Any<long>())
                        .Returns(Task.FromResult(selectedWorkspaceId));
                     ViewModel.Prepare("Some project");
                     ViewModel.Initialize().Wait();
@@ -698,14 +698,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 await ViewModel.PickWorkspaceCommand.ExecuteAsync();
 
                 await NavigationService.Received()
-                    .Navigate<SelectWorkspaceViewModel, WorkspaceParameters, long>(Arg.Any<WorkspaceParameters>());
+                    .Navigate<SelectWorkspaceViewModel, long, long>(Arg.Any<long>());
             }
 
             [Fact, LogIfTooSlow]
             public async Task SetsTheReturnedWorkspaceNameAsTheWorkspaceNameProperty()
             {
                 NavigationService
-                    .Navigate<SelectWorkspaceViewModel, WorkspaceParameters, long>(Arg.Any<WorkspaceParameters>())
+                    .Navigate<SelectWorkspaceViewModel, long, long>(Arg.Any<long>())
                     .Returns(Task.FromResult(workspaceId));
 
                 await ViewModel.PickWorkspaceCommand.ExecuteAsync();
@@ -717,7 +717,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public async Task ResetsTheClientNameWhenTheWorkspaceChanges()
             {
                 NavigationService
-                    .Navigate<SelectWorkspaceViewModel, WorkspaceParameters, long>(Arg.Any<WorkspaceParameters>())
+                    .Navigate<SelectWorkspaceViewModel, long, long>(Arg.Any<long>())
                     .Returns(Task.FromResult(workspaceId));
 
                 await ViewModel.PickWorkspaceCommand.ExecuteAsync();
@@ -732,7 +732,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Navigate<SelectColorViewModel, ColorParameters, MvxColor>(Arg.Any<ColorParameters>())
                     .Returns(Task.FromResult(MvxColors.Azure));
                 NavigationService
-                    .Navigate<SelectWorkspaceViewModel, WorkspaceParameters, long>(Arg.Any<WorkspaceParameters>())
+                    .Navigate<SelectWorkspaceViewModel, long, long>(Arg.Any<long>())
                     .Returns(Task.FromResult(workspaceId));
                 InteractorFactory.AreCustomColorsEnabledForWorkspace(workspaceId).Execute()
                     .Returns(Observable.Return(false));
@@ -791,7 +791,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .GetDefaultWorkspace()
                     .Execute()
                     .Returns(Observable.Return(Workspace));
-                DataSource.Clients.GetById(expectedId.Value).Returns(Observable.Return(client));
+                InteractorFactory.GetClientById(expectedId.Value)
+                    .Execute()
+                    .Returns(Observable.Return(client));
                 Workspace.Id.Returns(DefaultWorkspaceId);
                 ViewModel.Prepare("Some name");
 
@@ -815,7 +817,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .GetDefaultWorkspace()
                     .Execute()
                     .Returns(Observable.Return(Workspace));
-                DataSource.Clients.GetById(expectedId.Value).Returns(Observable.Return(client));
+                InteractorFactory.GetClientById(expectedId.Value)
+                    .Execute()
+                    .Returns(Observable.Return(client));
                 Workspace.Id.Returns(DefaultWorkspaceId);
                 ViewModel.Prepare("Some name");
                 await ViewModel.PickClientCommand.ExecuteAsync();

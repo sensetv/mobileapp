@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -124,7 +125,7 @@ namespace Toggl.Daneel.ViewSources
             {
                 var reusableView = collectionView.DequeueReusableSupplementaryView(elementKind, hourReuseIdentifier, indexPath) as HourSupplementaryView;
                 var hour = date.AddHours((int)indexPath.Item);
-                reusableView.SetLabel(hour.ToString(supplementaryHourFormat()));
+                reusableView.SetLabel(hour.ToString(supplementaryHourFormat(), CultureInfo.InvariantCulture));
                 return reusableView;
             }
             else if (elementKind == CalendarCollectionViewLayout.EditingHourSupplementaryViewKind)
@@ -132,7 +133,7 @@ namespace Toggl.Daneel.ViewSources
                 var reusableView = collectionView.DequeueReusableSupplementaryView(elementKind, editingHourReuseIdentifier, indexPath) as EditingHourSupplementaryView;
                 var attrs = layoutAttributes[(int)editingItemIndexPath.Item];
                 var hour = (int)indexPath.Item == 0 ? attrs.StartTime.ToLocalTime() : attrs.EndTime.ToLocalTime();
-                reusableView.SetLabel(hour.ToString(editingHourFormat()));
+                reusableView.SetLabel(hour.ToString(editingHourFormat(), CultureInfo.InvariantCulture));
                 return reusableView;
             }
 
@@ -172,6 +173,13 @@ namespace Toggl.Daneel.ViewSources
                 return calendarItems[(int)indexPath.Item];
             }
             return null;
+        }
+
+        public List<DateTimeOffset> AllItemsStartAndEndTime()
+        {
+            var startTimes = calendarItems.Select(item => item.StartTime).Distinct();
+            var endTimes = calendarItems.Where(item => item.EndTime.HasValue).Select(item => (DateTimeOffset)item.EndTime).Distinct();
+            return startTimes.Concat(endTimes).ToList();
         }
 
         public void StartEditing()
@@ -333,12 +341,12 @@ namespace Toggl.Daneel.ViewSources
             if (startEditingHour != null)
             {
                 var hour = attrs.StartTime.ToLocalTime();
-                startEditingHour.SetLabel(hour.ToString(editingHourFormat()));
+                startEditingHour.SetLabel(hour.ToString(editingHourFormat(), CultureInfo.InvariantCulture));
             }
             if (endEditingHour != null)
             {
                 var hour = attrs.EndTime.ToLocalTime();
-                endEditingHour.SetLabel(hour.ToString(editingHourFormat()));
+                endEditingHour.SetLabel(hour.ToString(editingHourFormat(), CultureInfo.InvariantCulture));
             }
         }
 

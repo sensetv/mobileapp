@@ -138,9 +138,13 @@ namespace Toggl.Ultrawave.ApiClients
 
         private async Task<bool> isLoggedIn(IEnumerable<HttpHeader> headers)
         {
-            var request = new Request(String.Empty, loggedEndpoint.Url, headers, loggedEndpoint.Method);
+            var request = new Request(string.Empty, loggedEndpoint.Url, headers, loggedEndpoint.Method);
             var response = await apiClient.Send(request).ConfigureAwait(false);
-            return !((int)response.StatusCode >= 400 && (int)response.StatusCode < 500);
+
+            if (response.StatusCode == TooManyRequestsException.CorrespondingHttpCode)
+                throw new TooManyRequestsException(request, response);
+
+            return response.StatusCode != HttpStatusCode.Forbidden;
         }
     }
 }

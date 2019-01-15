@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Toggl.Multivac;
 
 namespace Toggl.Foundation.MvvmCross.Combiners
@@ -14,7 +15,7 @@ namespace Toggl.Foundation.MvvmCross.Combiners
         }
 
         protected override object Combine(DateTimeOffset date, TimeFormat format)
-            => getDateTimeOffsetInCorrectTimeZone(date).ToString(format.Format);
+            => getDateTimeOffsetInCorrectTimeZone(date).ToString(format.Format, CultureInfo.InvariantCulture);
 
         private DateTimeOffset getDateTimeOffsetInCorrectTimeZone(DateTimeOffset value)
             => value == default(DateTimeOffset) ? value : TimeZoneInfo.ConvertTime(value, timeZone);

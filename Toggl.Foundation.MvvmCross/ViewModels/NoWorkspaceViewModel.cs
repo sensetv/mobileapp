@@ -61,8 +61,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private async Task tryAgain()
         {
-            dataSource.CreateNewSyncManager();
-
             var anyWorkspaceIsAvailable = await dataSource.SyncManager.ForceFullSync()
                 .Where(state => state == SyncState.Sleep)
                 .SelectMany(_ => interactorFactory.GetAllWorkspaces().Execute())
@@ -75,15 +73,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         }
 
         private IObservable<Unit> createWorkspaceWithDefaultName()
-        {
-            return interactorFactory.CreateDefaultWorkspace().Execute()
-                .Do(() =>
-                {
-                    dataSource.CreateNewSyncManager();
-                    dataSource.SyncManager.ForceFullSync();
-                    close();
-                });
-        }
+            => interactorFactory.CreateDefaultWorkspace().Execute().Do(close);
 
         private void close()
         {

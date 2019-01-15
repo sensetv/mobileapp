@@ -20,12 +20,10 @@
 with a single tap</value>
     </data>
     <data name="OnboardingMostUsedPageCopy">
-        <value>Resume tracking
-what you do most often</value>
+        <value>Resume tracking what you do most often</value>
     </data>
     <data name="OnboardingReportsPageCopy">
-        <value>Get an instant summary
-of your time with reports</value>
+        <value>Get an instant summary of your time with reports</value>
     </data>
     <data name="LoginTitle">
         <value>Log in</value>
@@ -86,7 +84,7 @@ Please try again.</value>
         <value>We're syncing your data</value>
     </data>
     <data name="SettingsSyncInProgressMessage">
-        <value>You may lose your data when you sign out before the sync is complete.</value>
+        <value>You may lose your data if you sign out before the sync is complete.</value>
     </data>
     <data name="SettingsUnsyncedTitle">
         <value>Unsynced data</value>
@@ -144,8 +142,7 @@ Please try again.</value>
     </data>
     <data name="LogEmptyStateText">
         <value>You haven’t tracked time for a while.
-Start the timer and your most used
-time entries will appear here.</value>
+Start the timer and your most used time entries will appear here.</value>
     </data>
     <data name="DifferentWorkspaceAlertTitle">
         <value>You've selected a project from another workspace.</value>
@@ -195,11 +192,17 @@ time entries will appear here.</value>
     <data name="AddFilterProjects">
         <value>Add/filter project</value>
     </data>
+    <data name="AddFilterClients">
+        <value>Add/filter clients</value>
+    </data>
     <data name="CreateTag">
         <value>Create tag</value>
     </data>
     <data name="CreateProject">
         <value>Create project</value>
+    </data>
+    <data name="Workspace">
+        <value>Workspace</value>
     </data>
     <data name="Workspaces">
         <value>Workspaces</value>
@@ -217,7 +220,7 @@ time entries will appear here.</value>
         <value>Please enter your email to reset your password.</value>
     </data>
     <data name="PasswordResetSuccess">
-        <value>We just sent you an email. Please follow the link in the email to reset your password.</value>
+        <value>Link sent. Please, check your email to reset the password.</value>
     </data>
     <data name="PasswordResetEmailDoesNotExistError">
         <value>Oops! Unknown email. Please check that it's entered correctly.</value>
@@ -235,7 +238,7 @@ time entries will appear here.</value>
         <value>Incorrect password. Please, try again</value>
     </data>
     <data name="GoogleLogin">
-        <value>Log in with Google</value>
+        <value>Sign in with Google</value>
     </data>
     <data name="GoogleSignUp">
         <value>Sign up with Google</value>
@@ -265,12 +268,10 @@ time entries will appear here.</value>
         <value>Of</value>
     </data>
     <data name="NoTagsInfoMessage">
-        <value>Add keywords to your
-time entries with # tags.</value>
+        <value>Add keywords to your time entries with # tags.</value>
     </data>
     <data name="NoProjectsInfoMessage">
-        <value>Create a project @ and
-categorize your tracked time.</value>
+        <value>Create a project @ and categorize your tracked time.</value>
     </data>
     <data name="MondayInitial">
         <value>M</value>
@@ -297,10 +298,10 @@ categorize your tracked time.</value>
         <value>Help</value>
     </data>
     <data name="WorkspaceChangedAlertTitle">
-        <value>You've changed the workspace.</value>
+        <value>You've changed workspace.</value>
     </data>
     <data name="WorkspaceChangedAlertMessage">
-        <value>Your project and time entry will be allocated under the selected workspace.</value>
+        <value>Your project and time entry will be allocated to the selected workspace.</value>
     </data>
     <data name="Reports">
         <value>Reports</value>
@@ -313,13 +314,6 @@ categorize your tracked time.</value>
     </data>
     <data name="MostRecentEntry">
         <value>Most recent entry</value>
-    </data>
-    <data name="NoEmailErrorTitle">
-        <value>Oops! Seems like your email
-account is not set up</value>
-    </data>
-    <data name="NoEmailErrorMessage">
-        <value>Go to “Settings > Mail > Add Account” to set up an email account or send us your feedback to support@toggl.com</value>
     </data>
     <data name="Continue">
         <value>Continue</value>
@@ -384,6 +378,9 @@ account is not set up</value>
     <data name="TermsOfServiceDialogMessage">
         <value>By tapping I Agree, you understand and agree to Toggl’s Terms of Service and Privacy Policy.</value>
     </data>
+    <data name="CountryOfResidence">
+        <value>Country of residence</value>
+    </data>
     <data name="SelectCountry">
         <value>Select country...</value>
     </data>
@@ -409,7 +406,7 @@ account is not set up</value>
         <value>Too Long</value>
     </data>
     <data name="ReportTooLongDescription">
-        <value>The maximum lenght of a report is 365 days.</value>
+        <value>The maximum length of a report is 365 days.</value>
     </data>
     <data name="ArchivedProjectDecorator">
         <value>(archived)</value>
@@ -495,7 +492,274 @@ account is not set up</value>
     <data name="Calendar">
         <value>Calendar</value>
     </data>
+    <data name="CalendarWhatToDoWithCalendarEvent">
+        <value>What would you like to do with this calendar event?</value>
+    </data>
+    <data name="CalendarStartNow">
+        <value>Start now</value>
+    </data>
+    <data name="CalendarStartWhenTheEventStarts">
+        <value>Start at event start</value>
+    </data>
+    <data name="CalendarCopyEventToTimeEntry">
+        <value>Copy as a time entry</value>
+    </data>
     <data name="CreateClient">
         <value>Create client</value>
+    </data>
+    <data name="NoWorries">
+        <value>No worries</value>
+    </data>
+    <data name="EnableAccessLater">
+        <value>You can enable access later from the Settings.</value>
+    </data>
+    <data name="ContinueWithoutAccess">
+        <value>Continue without the access</value>
+    </data>
+    <data name="AllowCalendarAccess">
+        <value>Allow Calendar access</value>
+    </data>
+    <data name="CalendarAccessExplanation">
+        <value>Toggl needs access to your calendar in order to display events. Events are visible to you only and won’t appear in Reports.</value>
+    </data>
+    <data name="Welcome">
+        <value>Welcome</value>
+    </data>
+    <data name="CalendarFeatureDescription">
+        <value>Calendar feature links to calendars on your device so that you can see events and turn these to time entries.</value>
+    </data>
+    <data name="GetStarted">
+        <value>Get started</value>
+    </data>
+    <data name="Start">
+        <value>Start</value>
+    </data>
+    <data name="End">
+        <value>End</value>
+    </data>
+    <data name="Stop">
+        <value>Stop</value>
+    </data>
+    <data name="StartAndStopTime">
+        <value>Start and stop times</value>
+    </data>
+    <data name="NameTakenError">
+        <value>Sorry, this name is already taken</value>
+    </data>
+    <data name="ProjectName">
+        <value>Project Name</value>
+    </data>
+    <data name="Edit">
+        <value>Edit</value>
+    </data>
+    <data name="Billable">
+        <value>Billable</value>
+    </data>
+    <data name="NonBillable">
+        <value>Non billable</value>
+    </data>
+    <data name="Startdate">
+        <value>Start date</value>
+    </data>
+    <data name="Duration">
+        <value>Duration</value>
+    </data>
+    <data name="AddProjectTask">
+        <value>Add project/task</value>
+    </data>
+    <data name="ConfirmChanges">
+        <value>Confirm changes</value>
+    </data>
+    <data name="CategorizeYourTimeWithProjects">
+        <value>Categorize your time with projects</value>
+    </data>
+    <data name="AddTags">
+        <value>Add tags</value>
+    </data>
+    <data name="EmailAddress">
+        <value>Email Address</value>
+    </data>
+    <data name="Password">
+        <value>Password</value>
+    </data>
+    <data name="Or">
+        <value>Or</value>
+    </data>
+    <data name="DoNotHaveAnAccountWithQuestionMark">
+        <value>Don't have an account?</value>
+    </data>
+    <data name="SwipeRightToContinue">
+        <value>Swipe right to continue</value>
+    </data>
+    <data name="SwipeLeftToDelete">
+        <value>Swipe left to delete</value>
+    </data>
+    <data name="YouHaveCreatedYourFirstTimeEntry">
+        <value>You've created your first time entry</value>
+    </data>
+    <data name="TapToEditIt">
+        <value>Tap to edit it</value>
+    </data>
+    <data name="TapToStartTimer">
+        <value>Tap to start timer</value>
+    </data>
+    <data name="TapToStopTimer">
+        <value>Tap to stop timer</value>
+    </data>
+    <data name="DoneWithExclamationMark">
+        <value>Done!</value>
+    </data>
+    <data name="ThankYouForTheFeedback">
+        <value>Thank you for the feedback. If you had any questions, we’ll get back to you soon.</value>
+    </data>
+    <data name="NotificationDisabledNotice">
+        <value>Notifications are currently disabled. If you’d like to recieve notifications, please enable them in the Settings app.</value>
+    </data>
+    <data name="OpenSettingsApp">
+        <value>Open Settings App</value>
+    </data>
+    <data name="UpcomingEvent">
+        <value>Upcoming event</value>
+    </data>
+    <data name="NotificationSettingExplaination">
+        <value>Be notified about upcoming events before they begin.</value>
+    </data>
+    <data name="CreateNewWorkspace">
+        <value>Create new workspace</value>
+    </data>
+    <data name="UhOh">
+        <value>Uh oh.</value>
+    </data>
+    <data name="NoWorkspaceErrorMessage">
+        <value>Seems someone has removed you from their workspace. No worries. Create a new workspace to continue.</value>
+    </data>
+    <data name="Skip">
+        <value>Skip</value>
+    </data>
+    <data name="Next">
+        <value>Next</value>
+    </data>
+    <data name="AppOutdatedMessage">
+        <value>Seems you haven't updated the app for quite some time...
+Please update your app to continue.</value>
+    </data>
+    <data name="UpdateTheApp">
+        <value>Update the app</value>
+    </data>
+    <data name="RatingCallToActionTitle">
+        <value>Sure, take me there</value>
+    </data>
+    <data name="NoThanks">
+        <value>No, thanks</value>
+    </data>
+    <data name="Total">
+        <value>Total</value>
+    </data>
+    <data name="ClockedHours">
+        <value>Clocked hours</value>
+    </data>
+    <data name="FirstDayOfTheWeek">
+        <value>First day of the week</value>
+    </data>
+    <data name="Clients">
+        <value>Clients</value>
+    </data>
+    <data name="ProjectColor">
+        <value>Project color</value>
+    </data>
+    <data name="Search">
+        <value>Search</value>
+    </data>
+    <data name="DateFormat">
+        <value>Date format</value>
+    </data>
+    <data name="SelectDefaultWorkspaceDescription">
+        <value>Your time will be automatically tracked under this workspace. You can change it later from the Settings.</value>
+    </data>
+    <data name="DurationFormat">
+        <value>Duration format</value>
+    </data>
+    <data name="Projects">
+        <value>Projects</value>
+    </data>
+    <data name="EmptyProjectText">
+        <value>Your projects will show up here.
+Use them to categorize your time.</value>
+    </data>
+    <data name="Tags">
+        <value>Tags</value>
+    </data>
+    <data name="EmptyTagText">
+        <value>Your tags will show up here.
+Use them to add keywords to your time entries.</value>
+    </data>
+    <data name="SelectCalendars">
+        <value>Select calendars</value>
+    </data>
+    <data name="SelectCalendarsDescription">
+        <value>Events are visible to you only and won’t appear in Reports.</value>
+    </data>
+    <data name="FilterWorkspaces">
+        <value>Filter workspaces</value>
+    </data>
+    <data name="ContactUs">
+        <value>Contact us</value>
+    </data>
+    <data name="FeedbackFieldPlaceholder">
+        <value>Let us know what you think. Send us your feedback and questions.</value>
+    </data>
+    <data name="SomethingWentWrongTryAgain">
+        <value>Something went wrong. Please try again</value>
+    </data>
+    <data name="Send">
+        <value>Send</value>
+    </data>
+    <data name="YourProfile">
+        <value>Your Profile</value>
+    </data>
+    <data name="FormatSettings">
+        <value>Format settings</value>
+    </data>
+    <data name="Use24HourClock">
+        <value>Use 24-hour clock</value>
+    </data>
+    <data name="ManualMode">
+        <value>Manual mode</value>
+    </data>
+    <data name="ManualModeDescription">
+        <value>You can add your data manually, instead of tracking in real time.</value>
+    </data>
+    <data name="SmartAlerts">
+        <value>Smart alerts</value>
+    </data>
+    <data name="SubmitFeedback">
+        <value>Submit feedback</value>
+    </data>
+    <data name="LoggingOutSecurely">
+        <value>Logging you out securely...</value>
+    </data>
+    <data name="SignOutOfToggl">
+        <value>Sign out of Toggl</value>
+    </data>
+    <data name="AlreadyHaveAnAccountQuestionMark">
+        <value>Already have an account?</value>
+    </data>
+    <data name="AddProjectBubbleText">
+        <value>Add a project and tags on the fly</value>
+    </data>
+    <data name="ReviewTheTerms">
+        <value>Review the Terms</value>
+    </data>
+    <data name="IAgree">
+        <value>I agree</value>
+    </data>
+    <data name="TokenResetInstruction">
+        <value>Enter your password to log back in to your account</value>
+    </data>
+    <data name="OrSignOut">
+        <value>or Sign out</value>
+    </data>
+    <data name="APITokenResetSuccess">
+        <value>Your API token has been reset.</value>
     </data>
 </root>

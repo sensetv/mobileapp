@@ -110,6 +110,9 @@ namespace Toggl.Daneel.Cells.Calendar
 
         protected override void UpdateView()
         {
+            CATransaction.Begin();
+            CATransaction.DisableActions = true;
+
             var color = itemColor();
             backgroundLayer.BackgroundColor = UIColor.White.CGColor;
             patternLayer.BackgroundColor = patternColor(Item.Source, color).CGColor;
@@ -122,6 +125,8 @@ namespace Toggl.Daneel.Cells.Calendar
             updateConstraints();
             updateBorderStyle(color);
             updateDragIndicators(color);
+
+            CATransaction.Commit();
         }
 
         public override void LayoutSubviews()

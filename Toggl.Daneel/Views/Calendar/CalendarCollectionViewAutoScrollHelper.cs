@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using CoreAnimation;
 using CoreGraphics;
 using Foundation;
 using Toggl.Daneel.Extensions;
 using Toggl.Multivac;
 using UIKit;
+using Math = System.Math;
+using Toggl.Multivac.Extensions;
 
 namespace Toggl.Daneel.Views.Calendar
 {
@@ -73,6 +77,70 @@ namespace Toggl.Daneel.Views.Calendar
             isAutoScrollingUp = false;
             isAutoScrollingDown = false;
         }
+
+        protected DateTimeOffset NewStartTimeWithDynamicDuration(CGPoint point, List<DateTimeOffset> allItemsStartAndEndTime)
+        {
+            if (!allItemsStartAndEndTime.Any())
+            {
+                return Layout.DateAtPoint(point).ToLocalTime().RoundToClosestQuarter();
+            }
+
+            var newStartTime = Layout.DateAtPoint(point).ToLocalTime();
+
+            var startSnappingPointDifference = distanceToClosestSnappingPoint(newStartTime, allItemsStartAndEndTime.Append(newStartTime.RoundToClosestQuarter()));
+
+            newStartTime += startSnappingPointDifference;
+
+            return newStartTime;
+        }
+
+        protected DateTimeOffset NewEndTimeWithDynamicDuration(CGPoint point, List<DateTimeOffset> allItemsStartAndEndTime)
+        {
+            if (!allItemsStartAndEndTime.Any())
+            {
+                return Layout.DateAtPoint(point).ToLocalTime().RoundToClosestQuarter();
+            }
+
+            var newEndTime = Layout.DateAtPoint(point).ToLocalTime();
+
+            var endSnappingPointDifference = distanceToClosestSnappingPoint((DateTimeOffset)newEndTime, allItemsStartAndEndTime.Append(newEndTime.RoundToClosestQuarter()));
+
+            newEndTime += endSnappingPointDifference;
+
+            return newEndTime;
+        }
+
+        protected DateTimeOffset NewStartTimeWithStaticDuration(CGPoint point, List<DateTimeOffset> allItemsStartAndEndTime, TimeSpan? duration)
+        {
+            if (!allItemsStartAndEndTime.Any())
+            {
+                return Layout.DateAtPoint(point).ToLocalTime().RoundToClosestQuarter();
+            }
+
+            var newStartTime = Layout.DateAtPoint(point).ToLocalTime();
+            var newEndTime = duration.HasValue ? newStartTime + duration : null;
+
+            var startSnappingPointDifference = distanceToClosestSnappingPoint(newStartTime, allItemsStartAndEndTime.Append(newStartTime.RoundToClosestQuarter()));
+
+            if (newEndTime.HasValue)
+            {
+                var endSnappingPointDifference = distanceToClosestSnappingPoint((DateTimeOffset)newEndTime, allItemsStartAndEndTime);
+                var snappingPointDifference = startSnappingPointDifference.Positive() < endSnappingPointDifference.Positive() ? startSnappingPointDifference : endSnappingPointDifference;
+                newStartTime += snappingPointDifference;
+            }
+            else
+            {
+                newStartTime += startSnappingPointDifference;
+            }
+
+            return newStartTime;
+        }
+
+        private TimeSpan distanceToClosestSnappingPoint(DateTimeOffset time, IEnumerable<DateTimeOffset> data)
+            => data.Aggregate(TimeSpan.MaxValue,
+                (min, next) => min.Positive() <= (next - time).Positive()
+                    ? min
+                    : (next - time));
 
         private void createDisplayLinkWithScrollAmount(float scrollAmount, Action<CGPoint> updateEntryAction)
         {

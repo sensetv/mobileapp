@@ -10,7 +10,6 @@
 
 namespace Toggl.Foundation {
     using System;
-    using System.Reflection;
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
@@ -401,6 +400,12 @@ namespace Toggl.Foundation {
             }
         }
         
+        public static string AddFilterClients {
+            get {
+                return ResourceManager.GetString("AddFilterClients", resourceCulture);
+            }
+        }
+        
         public static string CreateTag {
             get {
                 return ResourceManager.GetString("CreateTag", resourceCulture);
@@ -410,6 +415,12 @@ namespace Toggl.Foundation {
         public static string CreateProject {
             get {
                 return ResourceManager.GetString("CreateProject", resourceCulture);
+            }
+        }
+        
+        public static string Workspace {
+            get {
+                return ResourceManager.GetString("Workspace", resourceCulture);
             }
         }
         
@@ -635,18 +646,6 @@ namespace Toggl.Foundation {
             }
         }
         
-        public static string NoEmailErrorTitle {
-            get {
-                return ResourceManager.GetString("NoEmailErrorTitle", resourceCulture);
-            }
-        }
-        
-        public static string NoEmailErrorMessage {
-            get {
-                return ResourceManager.GetString("NoEmailErrorMessage", resourceCulture);
-            }
-        }
-        
         public static string Continue {
             get {
                 return ResourceManager.GetString("Continue", resourceCulture);
@@ -770,6 +769,12 @@ namespace Toggl.Foundation {
         public static string TermsOfServiceDialogMessage {
             get {
                 return ResourceManager.GetString("TermsOfServiceDialogMessage", resourceCulture);
+            }
+        }
+        
+        public static string CountryOfResidence {
+            get {
+                return ResourceManager.GetString("CountryOfResidence", resourceCulture);
             }
         }
         
@@ -995,9 +1000,537 @@ namespace Toggl.Foundation {
             }
         }
         
+        public static string CalendarWhatToDoWithCalendarEvent {
+            get {
+                return ResourceManager.GetString("CalendarWhatToDoWithCalendarEvent", resourceCulture);
+            }
+        }
+        
+        public static string CalendarStartNow {
+            get {
+                return ResourceManager.GetString("CalendarStartNow", resourceCulture);
+            }
+        }
+        
+        public static string CalendarStartWhenTheEventStarts {
+            get {
+                return ResourceManager.GetString("CalendarStartWhenTheEventStarts", resourceCulture);
+            }
+        }
+        
+        public static string CalendarCopyEventToTimeEntry {
+            get {
+                return ResourceManager.GetString("CalendarCopyEventToTimeEntry", resourceCulture);
+            }
+        }
+        
         public static string CreateClient {
             get {
                 return ResourceManager.GetString("CreateClient", resourceCulture);
+            }
+        }
+        
+        public static string NoWorries {
+            get {
+                return ResourceManager.GetString("NoWorries", resourceCulture);
+            }
+        }
+        
+        public static string EnableAccessLater {
+            get {
+                return ResourceManager.GetString("EnableAccessLater", resourceCulture);
+            }
+        }
+        
+        public static string ContinueWithoutAccess {
+            get {
+                return ResourceManager.GetString("ContinueWithoutAccess", resourceCulture);
+            }
+        }
+        
+        public static string AllowCalendarAccess {
+            get {
+                return ResourceManager.GetString("AllowCalendarAccess", resourceCulture);
+            }
+        }
+        
+        public static string CalendarAccessExplanation {
+            get {
+                return ResourceManager.GetString("CalendarAccessExplanation", resourceCulture);
+            }
+        }
+        
+        public static string Welcome {
+            get {
+                return ResourceManager.GetString("Welcome", resourceCulture);
+            }
+        }
+        
+        public static string CalendarFeatureDescription {
+            get {
+                return ResourceManager.GetString("CalendarFeatureDescription", resourceCulture);
+            }
+        }
+        
+        public static string GetStarted {
+            get {
+                return ResourceManager.GetString("GetStarted", resourceCulture);
+            }
+        }
+        
+        public static string Start {
+            get {
+                return ResourceManager.GetString("Start", resourceCulture);
+            }
+        }
+        
+        public static string End {
+            get {
+                return ResourceManager.GetString("End", resourceCulture);
+            }
+        }
+        
+        public static string Stop {
+            get {
+                return ResourceManager.GetString("Stop", resourceCulture);
+            }
+        }
+        
+        public static string StartAndStopTime {
+            get {
+                return ResourceManager.GetString("StartAndStopTime", resourceCulture);
+            }
+        }
+        
+        public static string NameTakenError {
+            get {
+                return ResourceManager.GetString("NameTakenError", resourceCulture);
+            }
+        }
+        
+        public static string ProjectName {
+            get {
+                return ResourceManager.GetString("ProjectName", resourceCulture);
+            }
+        }
+        
+        public static string Edit {
+            get {
+                return ResourceManager.GetString("Edit", resourceCulture);
+            }
+        }
+        
+        public static string Billable {
+            get {
+                return ResourceManager.GetString("Billable", resourceCulture);
+            }
+        }
+        
+        public static string NonBillable {
+            get {
+                return ResourceManager.GetString("NonBillable", resourceCulture);
+            }
+        }
+        
+        public static string Startdate {
+            get {
+                return ResourceManager.GetString("Startdate", resourceCulture);
+            }
+        }
+        
+        public static string Duration {
+            get {
+                return ResourceManager.GetString("Duration", resourceCulture);
+            }
+        }
+        
+        public static string AddProjectTask {
+            get {
+                return ResourceManager.GetString("AddProjectTask", resourceCulture);
+            }
+        }
+        
+        public static string ConfirmChanges {
+            get {
+                return ResourceManager.GetString("ConfirmChanges", resourceCulture);
+            }
+        }
+        
+        public static string CategorizeYourTimeWithProjects {
+            get {
+                return ResourceManager.GetString("CategorizeYourTimeWithProjects", resourceCulture);
+            }
+        }
+        
+        public static string AddTags {
+            get {
+                return ResourceManager.GetString("AddTags", resourceCulture);
+            }
+        }
+        
+        public static string EmailAddress {
+            get {
+                return ResourceManager.GetString("EmailAddress", resourceCulture);
+            }
+        }
+        
+        public static string Password {
+            get {
+                return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        public static string Or {
+            get {
+                return ResourceManager.GetString("Or", resourceCulture);
+            }
+        }
+        
+        public static string DoNotHaveAnAccountWithQuestionMark {
+            get {
+                return ResourceManager.GetString("DoNotHaveAnAccountWithQuestionMark", resourceCulture);
+            }
+        }
+        
+        public static string SwipeRightToContinue {
+            get {
+                return ResourceManager.GetString("SwipeRightToContinue", resourceCulture);
+            }
+        }
+        
+        public static string SwipeLeftToDelete {
+            get {
+                return ResourceManager.GetString("SwipeLeftToDelete", resourceCulture);
+            }
+        }
+        
+        public static string YouHaveCreatedYourFirstTimeEntry {
+            get {
+                return ResourceManager.GetString("YouHaveCreatedYourFirstTimeEntry", resourceCulture);
+            }
+        }
+        
+        public static string TapToEditIt {
+            get {
+                return ResourceManager.GetString("TapToEditIt", resourceCulture);
+            }
+        }
+        
+        public static string TapToStartTimer {
+            get {
+                return ResourceManager.GetString("TapToStartTimer", resourceCulture);
+            }
+        }
+        
+        public static string TapToStopTimer {
+            get {
+                return ResourceManager.GetString("TapToStopTimer", resourceCulture);
+            }
+        }
+        
+        public static string DoneWithExclamationMark {
+            get {
+                return ResourceManager.GetString("DoneWithExclamationMark", resourceCulture);
+            }
+        }
+        
+        public static string ThankYouForTheFeedback {
+            get {
+                return ResourceManager.GetString("ThankYouForTheFeedback", resourceCulture);
+            }
+        }
+        
+        public static string NotificationDisabledNotice {
+            get {
+                return ResourceManager.GetString("NotificationDisabledNotice", resourceCulture);
+            }
+        }
+        
+        public static string OpenSettingsApp {
+            get {
+                return ResourceManager.GetString("OpenSettingsApp", resourceCulture);
+            }
+        }
+        
+        public static string UpcomingEvent {
+            get {
+                return ResourceManager.GetString("UpcomingEvent", resourceCulture);
+            }
+        }
+        
+        public static string NotificationSettingExplaination {
+            get {
+                return ResourceManager.GetString("NotificationSettingExplaination", resourceCulture);
+            }
+        }
+        
+        public static string CreateNewWorkspace {
+            get {
+                return ResourceManager.GetString("CreateNewWorkspace", resourceCulture);
+            }
+        }
+        
+        public static string UhOh {
+            get {
+                return ResourceManager.GetString("UhOh", resourceCulture);
+            }
+        }
+        
+        public static string NoWorkspaceErrorMessage {
+            get {
+                return ResourceManager.GetString("NoWorkspaceErrorMessage", resourceCulture);
+            }
+        }
+        
+        public static string Skip {
+            get {
+                return ResourceManager.GetString("Skip", resourceCulture);
+            }
+        }
+        
+        public static string Next {
+            get {
+                return ResourceManager.GetString("Next", resourceCulture);
+            }
+        }
+        
+        public static string AppOutdatedMessage {
+            get {
+                return ResourceManager.GetString("AppOutdatedMessage", resourceCulture);
+            }
+        }
+        
+        public static string UpdateTheApp {
+            get {
+                return ResourceManager.GetString("UpdateTheApp", resourceCulture);
+            }
+        }
+        
+        public static string RatingCallToActionTitle {
+            get {
+                return ResourceManager.GetString("RatingCallToActionTitle", resourceCulture);
+            }
+        }
+        
+        public static string NoThanks {
+            get {
+                return ResourceManager.GetString("NoThanks", resourceCulture);
+            }
+        }
+        
+        public static string Total {
+            get {
+                return ResourceManager.GetString("Total", resourceCulture);
+            }
+        }
+        
+        public static string ClockedHours {
+            get {
+                return ResourceManager.GetString("ClockedHours", resourceCulture);
+            }
+        }
+        
+        public static string FirstDayOfTheWeek {
+            get {
+                return ResourceManager.GetString("FirstDayOfTheWeek", resourceCulture);
+            }
+        }
+        
+        public static string Clients {
+            get {
+                return ResourceManager.GetString("Clients", resourceCulture);
+            }
+        }
+        
+        public static string ProjectColor {
+            get {
+                return ResourceManager.GetString("ProjectColor", resourceCulture);
+            }
+        }
+        
+        public static string Search {
+            get {
+                return ResourceManager.GetString("Search", resourceCulture);
+            }
+        }
+        
+        public static string DateFormat {
+            get {
+                return ResourceManager.GetString("DateFormat", resourceCulture);
+            }
+        }
+        
+        public static string SelectDefaultWorkspaceDescription {
+            get {
+                return ResourceManager.GetString("SelectDefaultWorkspaceDescription", resourceCulture);
+            }
+        }
+        
+        public static string DurationFormat {
+            get {
+                return ResourceManager.GetString("DurationFormat", resourceCulture);
+            }
+        }
+        
+        public static string Projects {
+            get {
+                return ResourceManager.GetString("Projects", resourceCulture);
+            }
+        }
+        
+        public static string EmptyProjectText {
+            get {
+                return ResourceManager.GetString("EmptyProjectText", resourceCulture);
+            }
+        }
+        
+        public static string Tags {
+            get {
+                return ResourceManager.GetString("Tags", resourceCulture);
+            }
+        }
+        
+        public static string EmptyTagText {
+            get {
+                return ResourceManager.GetString("EmptyTagText", resourceCulture);
+            }
+        }
+        
+        public static string SelectCalendars {
+            get {
+                return ResourceManager.GetString("SelectCalendars", resourceCulture);
+            }
+        }
+        
+        public static string SelectCalendarsDescription {
+            get {
+                return ResourceManager.GetString("SelectCalendarsDescription", resourceCulture);
+            }
+        }
+        
+        public static string FilterWorkspaces {
+            get {
+                return ResourceManager.GetString("FilterWorkspaces", resourceCulture);
+            }
+        }
+        
+        public static string ContactUs {
+            get {
+                return ResourceManager.GetString("ContactUs", resourceCulture);
+            }
+        }
+        
+        public static string FeedbackFieldPlaceholder {
+            get {
+                return ResourceManager.GetString("FeedbackFieldPlaceholder", resourceCulture);
+            }
+        }
+        
+        public static string SomethingWentWrongTryAgain {
+            get {
+                return ResourceManager.GetString("SomethingWentWrongTryAgain", resourceCulture);
+            }
+        }
+        
+        public static string Send {
+            get {
+                return ResourceManager.GetString("Send", resourceCulture);
+            }
+        }
+        
+        public static string YourProfile {
+            get {
+                return ResourceManager.GetString("YourProfile", resourceCulture);
+            }
+        }
+        
+        public static string FormatSettings {
+            get {
+                return ResourceManager.GetString("FormatSettings", resourceCulture);
+            }
+        }
+        
+        public static string Use24HourClock {
+            get {
+                return ResourceManager.GetString("Use24HourClock", resourceCulture);
+            }
+        }
+        
+        public static string ManualMode {
+            get {
+                return ResourceManager.GetString("ManualMode", resourceCulture);
+            }
+        }
+        
+        public static string ManualModeDescription {
+            get {
+                return ResourceManager.GetString("ManualModeDescription", resourceCulture);
+            }
+        }
+        
+        public static string SmartAlerts {
+            get {
+                return ResourceManager.GetString("SmartAlerts", resourceCulture);
+            }
+        }
+        
+        public static string SubmitFeedback {
+            get {
+                return ResourceManager.GetString("SubmitFeedback", resourceCulture);
+            }
+        }
+        
+        public static string LoggingOutSecurely {
+            get {
+                return ResourceManager.GetString("LoggingOutSecurely", resourceCulture);
+            }
+        }
+        
+        public static string SignOutOfToggl {
+            get {
+                return ResourceManager.GetString("SignOutOfToggl", resourceCulture);
+            }
+        }
+        
+        public static string AlreadyHaveAnAccountQuestionMark {
+            get {
+                return ResourceManager.GetString("AlreadyHaveAnAccountQuestionMark", resourceCulture);
+            }
+        }
+        
+        public static string AddProjectBubbleText {
+            get {
+                return ResourceManager.GetString("AddProjectBubbleText", resourceCulture);
+            }
+        }
+        
+        public static string ReviewTheTerms {
+            get {
+                return ResourceManager.GetString("ReviewTheTerms", resourceCulture);
+            }
+        }
+        
+        public static string IAgree {
+            get {
+                return ResourceManager.GetString("IAgree", resourceCulture);
+            }
+        }
+        
+        public static string TokenResetInstruction {
+            get {
+                return ResourceManager.GetString("TokenResetInstruction", resourceCulture);
+            }
+        }
+        
+        public static string OrSignOut {
+            get {
+                return ResourceManager.GetString("OrSignOut", resourceCulture);
+            }
+        }
+        
+        public static string APITokenResetSuccess {
+            get {
+                return ResourceManager.GetString("APITokenResetSuccess", resourceCulture);
             }
         }
     }

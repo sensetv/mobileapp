@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using FluentAssertions;
 using MvvmCross.Binding.Bindings.SourceSteps;
 using MvvmCross.Converters;
@@ -58,7 +59,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Combiners
 
                     successful.Should().BeTrue();
                     convertedValue.Should().BeOfType<string>();
-                    convertedValue.Should().Be(now.ToString(format.Long));
+                    convertedValue.Should().Be(now.ToString(format.Long, CultureInfo.InvariantCulture));
                 }
 
                 public static IEnumerable<object[]> DateFormats()

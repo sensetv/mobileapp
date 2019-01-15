@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+﻿using System.Net.Http;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Toggl.Multivac.Extensions;
 using Toggl.Ultrawave.Network;
@@ -21,6 +22,17 @@ namespace Toggl.Ultrawave.Tests.Integration
             var (email, password) = generateEmailPassword();
             await createUser(email, password);
             return (email, password);
+        }
+
+        public static async Task ResetApiToken(IUser user)
+        {
+            var message = AuthorizedRequestBuilder.CreateRequest(Credentials.WithApiToken(user.ApiToken),
+                "https://toggl.space/api/v8/reset_token", HttpMethod.Post);
+
+            using (var client = new HttpClient())
+            {
+                await client.SendAsync(message);
+            }
         }
 
         private static (Email email, Password password) generateEmailPassword()

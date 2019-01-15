@@ -1,14 +1,12 @@
 ﻿using System;
 using Foundation;
-using MvvmCross.Binding.BindingContext;
-using MvvmCross.Platforms.Ios.Binding;
-using MvvmCross.Platforms.Ios.Binding.Views;
+using Toggl.Daneel.Cells;
 using Toggl.Foundation.MvvmCross.ViewModels.Selectable;
 using UIKit;
 
 namespace Toggl.Daneel.Views.Settings
 {
-    public sealed partial class DateFormatViewCell : MvxTableViewCell
+    public sealed partial class DateFormatViewCell : BaseTableViewCell<SelectableDateFormatViewModel>
     {
         public static readonly NSString Key = new NSString(nameof(DateFormatViewCell));
         public static readonly UINib Nib;
@@ -26,19 +24,14 @@ namespace Toggl.Daneel.Views.Settings
         public override void AwakeFromNib()
         {
             base.AwakeFromNib();
+            DateFormatLabel.Text = string.Empty;
+            SelectedImageView.Hidden = true;
+        }
 
-            this.DelayBind(() =>
-            {
-                var bindingSet = this.CreateBindingSet<DateFormatViewCell, SelectableDateFormatViewModel>();
-
-                bindingSet.Bind(DateFormatLabel).To(vm => vm.DateFormat.Localized);
-
-                bindingSet.Bind(SelectedImageView)
-                          .For(v => v.BindVisible())
-                          .To(vm => vm.Selected);
-
-                bindingSet.Apply();
-            });
+        protected override void UpdateView()
+        {
+            DateFormatLabel.Text = Item.DateFormat.Localized;
+            SelectedImageView.Hidden = !Item.Selected;
         }
     }
 }

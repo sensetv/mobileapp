@@ -21,7 +21,6 @@ namespace Toggl.Foundation
         public IApiFactory ApiFactory { get; }
         public ITogglDatabase Database { get; }
         public ITimeService TimeService { get; }
-        public IMailService MailService { get; }
         public IPlatformInfo PlatformInfo { get; }
         public IGoogleService GoogleService { get; }
         public IRatingService RatingService { get; }
@@ -53,7 +52,6 @@ namespace Toggl.Foundation
             Scheduler = builder.Scheduler;
             ApiFactory = builder.ApiFactory;
             TimeService = builder.TimeService;
-            MailService = builder.MailService;
             GoogleService = builder.GoogleService;
             RatingService = builder.RatingService;
             ApiEnvironment = builder.ApiEnvironment;
@@ -81,7 +79,6 @@ namespace Toggl.Foundation
             public ITogglDatabase Database { get; internal set; }
             public ITimeService TimeService { get; internal set; }
             public IScheduler Scheduler { get; internal set; }
-            public IMailService MailService { get; internal set; }
             public IRatingService RatingService { get; internal set; }
             public IGoogleService GoogleService { get; internal set; }
             public ApiEnvironment ApiEnvironment { get; internal set; }
@@ -140,12 +137,6 @@ namespace Toggl.Foundation
             public Builder WithApiFactory(IApiFactory apiFactory)
             {
                 ApiFactory = apiFactory;
-                return this;
-            }
-
-            public Builder WithMailService(IMailService mailService)
-            {
-                MailService = mailService;
                 return this;
             }
 
@@ -251,10 +242,6 @@ namespace Toggl.Foundation
                 where TApiFactory : IApiFactory, new()
                 => WithApiFactory(new TApiFactory());
 
-            public Builder WithMailService<TMailService>()
-                where TMailService : IMailService, new()
-                => WithMailService(new TMailService());
-
             public Builder WithTimeService<TTimeService>()
                 where TTimeService : ITimeService, new()
                 => WithTimeService(new TTimeService());
@@ -314,7 +301,6 @@ namespace Toggl.Foundation
                 Ensure.Argument.IsNotNull(Scheduler, nameof(Scheduler));
                 Ensure.Argument.IsNotNull(ApiFactory, nameof(ApiFactory));
                 Ensure.Argument.IsNotNull(TimeService, nameof(TimeService));
-                Ensure.Argument.IsNotNull(MailService, nameof(MailService));
                 Ensure.Argument.IsNotNull(GoogleService, nameof(GoogleService));
                 Ensure.Argument.IsNotNull(RatingService, nameof(RatingService));
                 Ensure.Argument.IsNotNull(LicenseProvider, nameof(LicenseProvider));

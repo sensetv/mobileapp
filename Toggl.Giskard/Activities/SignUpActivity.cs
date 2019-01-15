@@ -3,7 +3,6 @@ using System.Reactive.Linq;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
-using Android.Graphics;
 using Android.OS;
 using Android.Views;
 using MvvmCross.Platforms.Android.Binding.Views;
@@ -25,7 +24,7 @@ namespace Toggl.Giskard.Activities
     {
         protected override void OnCreate(Bundle bundle)
         {
-            this.ChangeStatusBarColor(Color.White, true);
+            this.ChangeStatusBarColor(Android.Graphics.Color.White, true);
 
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.SignUpActivity);

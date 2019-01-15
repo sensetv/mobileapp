@@ -1,18 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
-using MvvmCross.Binding.BindingContext;
+using Toggl.Daneel.Extensions;
+using Toggl.Daneel.Extensions.Reactive;
 using Toggl.Daneel.Presentation.Attributes;
+using Toggl.Daneel.Views;
 using Toggl.Daneel.ViewSources;
+using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Multivac.Extensions;
 using UIKit;
 
 namespace Toggl.Daneel.ViewControllers
 {
     [ModalCardPresentation]
-    public partial class SelectWorkspaceViewController : KeyboardAwareViewController<SelectWorkspaceViewModel>, IDismissableViewController
+    public partial class SelectWorkspaceViewController : ReactiveViewController<SelectWorkspaceViewModel>, IDismissableViewController
     {
+        private WorkspaceTableViewSource tableViewSource = new WorkspaceTableViewSource();
+
         public SelectWorkspaceViewController() 
             : base(nameof(SelectWorkspaceViewController))
         {
@@ -22,47 +30,33 @@ namespace Toggl.Daneel.ViewControllers
         {
             base.ViewDidLoad();
 
-            var source = new WorkspaceTableViewSource(SuggestionsTableView);
-            SuggestionsTableView.Source = source;
+            WorkspaceTableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
+            WorkspaceTableView.RegisterNibForCellReuse(WorkspaceViewCell.Nib, WorkspaceViewCell.Identifier);
+            WorkspaceTableView.Source = tableViewSource;
 
-            var bindingSet = this.CreateBindingSet<SelectWorkspaceViewController, SelectWorkspaceViewModel>();
+            TitleLabel.Text = ViewModel.Title;
 
-            bindingSet.Bind(TitleLabel).To(vm => vm.Title);
+            CloseButton.Rx()
+                .BindAction(ViewModel.Close)
+                .DisposedBy(DisposeBag);
 
-            bindingSet.Bind(source).To(vm => vm.Suggestions);
-            bindingSet.Bind(SearchTextField).To(vm => vm.Text);
-            bindingSet.Bind(CloseButton).To(vm => vm.CloseCommand);
-            bindingSet.Bind(source)
-                      .For(v => v.SelectionChangedCommand)
-                      .To(vm => vm.SelectWorkspaceCommand);
+            tableViewSource.WorkspaceSelected
+                .Subscribe(ViewModel.SelectWorkspace.Inputs)
+                .DisposedBy(DisposeBag);
 
-            bindingSet.Bind(SuggestionsTableViewConstraint)
-                      .For(v => v.Constant)
-                      .To(vm => vm.AllowQuerying)
-                      .WithConversion(new BoolToConstantValueConverter<nfloat>(72, 24));
-
-            bindingSet.Apply();
-
-            if (ViewModel.AllowQuerying)
-                SearchTextField.BecomeFirstResponder();
+            replaceWorkspaces(ViewModel.Workspaces);
         }
 
         public async Task<bool> Dismiss()
         {
-            await ViewModel.CloseCommand.ExecuteAsync();
+            await ViewModel.Close.Execute();
             return true;
         }
 
-        protected override void KeyboardWillShow(object sender, UIKeyboardEventArgs e)
+        private void replaceWorkspaces(IReadOnlyCollection<SelectableWorkspaceViewModel> workspaces)
         {
-            BottomConstraint.Constant = e.FrameEnd.Height;
-            UIView.Animate(Animation.Timings.EnterTiming, () => View.LayoutIfNeeded());
-        }
-
-        protected override void KeyboardWillHide(object sender, UIKeyboardEventArgs e)
-        {
-            BottomConstraint.Constant = 0;
-            UIView.Animate(Animation.Timings.EnterTiming, () => View.LayoutIfNeeded());
+            tableViewSource.SetNewWorkspaces(workspaces);
+            WorkspaceTableView.ReloadData();
         }
     }
 }

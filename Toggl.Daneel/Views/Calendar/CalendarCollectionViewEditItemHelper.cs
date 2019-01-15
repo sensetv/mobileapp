@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using CoreGraphics;
@@ -11,9 +12,7 @@ using Toggl.Foundation.Calendar;
 using Toggl.Foundation.Extensions;
 using Toggl.Foundation.Helper;
 using Toggl.Multivac;
-using Toggl.Multivac.Extensions;
 using UIKit;
-using Math = System.Math;
 
 namespace Toggl.Daneel.Views.Calendar
 {
@@ -37,6 +36,7 @@ namespace Toggl.Daneel.Views.Calendar
         private UITapGestureRecognizer tapGestureRecognizer;
 
         private CalendarItem calendarItem;
+        private List<DateTimeOffset> allItemsStartAndEndTime;
 
         private NSIndexPath itemIndexPath;
         private nfloat verticalOffset;
@@ -50,7 +50,10 @@ namespace Toggl.Daneel.Views.Calendar
         private bool didDragDown;
 
         private readonly ISubject<CalendarItem> editCalendarItemSuject = new Subject<CalendarItem>();
+        private readonly ISubject<CalendarItem> longPressCalendarEventSubject = new Subject<CalendarItem>();
+
         public IObservable<CalendarItem> EditCalendarItem => editCalendarItemSuject.AsObservable();
+        public IObservable<CalendarItem> LongPressCalendarEvent => longPressCalendarEventSubject.AsObservable();
 
         public CalendarCollectionViewEditItemHelper(
             UICollectionView CollectionView,
@@ -143,11 +146,20 @@ namespace Toggl.Daneel.Views.Calendar
             if (dataSource.IsEditing || isActive)
                 return;
 
+            allItemsStartAndEndTime = dataSource.AllItemsStartAndEndTime();
+
             var itemAtPoint = dataSource.CalendarItemAtPoint(point);
             if (!itemAtPoint.HasValue)
                 return;
 
             calendarItem = itemAtPoint.Value;
+
+            if (calendarItem.Source == CalendarItemSource.Calendar)
+            {
+                longPressCalendarEventSubject.OnNext(calendarItem);
+                return;
+            }
+
             if (!calendarItem.IsEditable())
                 return;
 
@@ -187,6 +199,8 @@ namespace Toggl.Daneel.Views.Calendar
             if (!isActive)
                 return;
 
+            allItemsStartAndEndTime = dataSource.AllItemsStartAndEndTime();
+
             firstPoint = point;
             LastPoint = point;
 
@@ -224,24 +238,25 @@ namespace Toggl.Daneel.Views.Calendar
             previousPoint = point;
         }
 
+
+
         private void changeOffset(CGPoint point)
         {
             if (!isActive || itemIndexPath == null)
                 return;
 
-            if (Math.Abs(LastPoint.Y - point.Y) < CalendarCollectionViewLayout.HourHeight / 4)
-                return;
+            var currentPointWithOffest = new CGPoint(point.X, point.Y - verticalOffset);
+
+            var newStartTime = NewStartTimeWithStaticDuration(currentPointWithOffest, allItemsStartAndEndTime, calendarItem.Duration);
 
             LastPoint = point;
             var now = timeService.CurrentDateTime;
-            var startPoint = new CGPoint(LastPoint.X, LastPoint.Y - verticalOffset);
-            var startTime = Layout.DateAtPoint(startPoint).ToLocalTime().RoundDownToClosestQuarter();
 
-            if (startTime + calendarItem.Duration > startTime.Date.AddDays(1))
+            if (newStartTime + calendarItem.Duration > newStartTime.Date.AddDays(1))
                 return;
 
             calendarItem = calendarItem
-                .WithStartTime(startTime);
+                .WithStartTime(newStartTime);
 
             itemIndexPath = dataSource.UpdateItemView(itemIndexPath, calendarItem.StartTime, calendarItem.Duration(now));
             selectionFeedback.SelectionChanged();
@@ -261,24 +276,23 @@ namespace Toggl.Daneel.Views.Calendar
             if (!isActive || itemIndexPath == null)
                 return;
 
-            if (Math.Abs(LastPoint.Y - point.Y) < CalendarCollectionViewLayout.HourHeight / 4)
-                return;
-
             if (point.Y < 0 || point.Y >= Layout.ContentViewHeight)
                 return;
 
             LastPoint = point;
             var now = timeService.CurrentDateTime;
-            var startTime = Layout.DateAtPoint(LastPoint).ToLocalTime().RoundDownToClosestQuarter();
-            var duration = calendarItem.Duration.HasValue ? calendarItem.EndTime(now) - startTime : null as TimeSpan?;
 
-            if (duration != null && duration <= TimeSpan.Zero ||
-                duration == null && startTime > now)
+            var newStartTime = NewStartTimeWithDynamicDuration(point, allItemsStartAndEndTime);
+
+            var newDuration = calendarItem.Duration.HasValue ? calendarItem.EndTime(now) - newStartTime : null as TimeSpan?;
+
+            if (newDuration != null && newDuration <= TimeSpan.Zero ||
+                newDuration == null && newStartTime > now)
                 return;
 
             calendarItem = calendarItem
-                .WithStartTime(startTime)
-                .WithDuration(duration);
+                .WithStartTime(newStartTime)
+                .WithDuration(newDuration);
 
             itemIndexPath = dataSource.UpdateItemView(itemIndexPath, calendarItem.StartTime, calendarItem.Duration(now));
             selectionFeedback.SelectionChanged();
@@ -296,22 +310,21 @@ namespace Toggl.Daneel.Views.Calendar
             if (calendarItem.Duration == null || !isActive || itemIndexPath == null)
                 return;
 
-            if (Math.Abs(LastPoint.Y - point.Y) < CalendarCollectionViewLayout.HourHeight / 4)
-                return;
-
             if (point.Y < 0 || point.Y >= Layout.ContentViewHeight)
                 return;
 
             LastPoint = point;
             var now = timeService.CurrentDateTime;
-            var endTime = Layout.DateAtPoint(LastPoint).ToLocalTime().RoundUpToClosestQuarter();
-            var duration = endTime - calendarItem.StartTime;
 
-            if (duration <= TimeSpan.Zero)
+            var newEndTime = NewEndTimeWithDynamicDuration(point, allItemsStartAndEndTime);
+
+            var newDuration = newEndTime - calendarItem.StartTime;
+
+            if (newDuration <= TimeSpan.Zero)
                 return;
 
             calendarItem = calendarItem
-                .WithDuration(duration);
+                .WithDuration(newDuration);
 
             itemIndexPath = dataSource.UpdateItemView(itemIndexPath, calendarItem.StartTime, calendarItem.Duration(now));
             selectionFeedback.SelectionChanged();

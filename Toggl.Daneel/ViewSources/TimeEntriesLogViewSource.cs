@@ -9,7 +9,6 @@ using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Collections;
 using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.ViewModels;
-using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using UIKit;
@@ -20,7 +19,6 @@ namespace Toggl.Daneel.ViewSources
     {
         private const int rowHeight = 64;
         private const int headerHeight = 48;
-        private const int spaceBetweenSections = 20;
 
         private readonly ITimeService timeService;
         private readonly ISchedulerProvider schedulerProvider;
@@ -32,6 +30,8 @@ namespace Toggl.Daneel.ViewSources
 
         //Using the old API so that delete action would work on pre iOS 11 devices
         private readonly UITableViewRowAction deleteTableViewRowAction;
+
+        public const int SpaceBetweenSections = 20;
 
         public bool IsEmptyState { get; set; }
 
@@ -65,18 +65,18 @@ namespace Toggl.Daneel.ViewSources
                     UITableViewRowActionStyle.Destructive,
                     Resources.Delete,
                     handleDeleteTableViewRowAction);
-                deleteTableViewRowAction.BackgroundColor = Color.TimeEntriesLog.DeleteSwipeActionBackground.ToNativeColor();
+                deleteTableViewRowAction.BackgroundColor = Foundation.MvvmCross.Helper.Color.TimeEntriesLog.DeleteSwipeActionBackground.ToNativeColor();
             }
 
             FirstCell = firstCellSubject.AsDriver(schedulerProvider);
         }
 
         public override UIView GetViewForFooter(UITableView tableView, nint section)
-            => new UIView(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width, spaceBetweenSections));
+            => new UIView(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width, SpaceBetweenSections));
 
         public override nfloat GetHeightForHeader(UITableView tableView, nint section) => headerHeight;
 
-        public override nfloat GetHeightForFooter(UITableView tableView, nint section) => spaceBetweenSections;
+        public override nfloat GetHeightForFooter(UITableView tableView, nint section) => SpaceBetweenSections;
 
         public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath) => rowHeight;
 
@@ -171,7 +171,7 @@ namespace Toggl.Daneel.ViewSources
                     completionHandler.Invoke(finished: true);
                 }
             );
-            continueAction.BackgroundColor = Color.TimeEntriesLog.ContinueSwipeActionBackground.ToNativeColor();
+            continueAction.BackgroundColor = Foundation.MvvmCross.Helper.Color.TimeEntriesLog.ContinueSwipeActionBackground.ToNativeColor();
             return continueAction;
         }
 
@@ -186,7 +186,7 @@ namespace Toggl.Daneel.ViewSources
                     completionHandler.Invoke(finished: true);
                 }
             );
-            deleteAction.BackgroundColor = Color.TimeEntriesLog.DeleteSwipeActionBackground.ToNativeColor();
+            deleteAction.BackgroundColor = Foundation.MvvmCross.Helper.Color.TimeEntriesLog.DeleteSwipeActionBackground.ToNativeColor();
             return deleteAction;
         }
     }

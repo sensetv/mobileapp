@@ -1,19 +1,17 @@
-﻿using System;
-using MvvmCross.ViewModels;
-using Toggl.Foundation.Models.Interfaces;
+﻿using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.MvvmCross.Interfaces;
 using Toggl.Multivac;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
     [Preserve(AllMembers = true)]
-    public sealed class SelectableWorkspaceViewModel : MvxNotifyPropertyChanged, IDiffable<SelectableWorkspaceViewModel>
+    public sealed class SelectableWorkspaceViewModel : IDiffable<SelectableWorkspaceViewModel>
     {
-        public long WorkspaceId { get; set; }
+        public long WorkspaceId { get; }
 
-        public string WorkspaceName { get; set; }
+        public string WorkspaceName { get; }
 
-        public bool Selected { get; set; }
+        public bool Selected { get; }
 
         public SelectableWorkspaceViewModel(IThreadSafeWorkspace workspace, bool selected)
         {

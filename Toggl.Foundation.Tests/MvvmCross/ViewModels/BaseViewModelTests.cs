@@ -22,14 +22,12 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
     {
         protected ITogglApi Api { get; } = Substitute.For<ITogglApi>();
         protected IApiFactory ApiFactory { get; } = Substitute.For<IApiFactory>();
-        protected IMailService MailService { get; } = Substitute.For<IMailService>();
         protected ITogglDatabase Database { get; } = Substitute.For<ITogglDatabase>();
         protected IUserAccessManager UserAccessManager { get; } = Substitute.For<IUserAccessManager>();
         protected IRatingService RatingService { get; } = Substitute.For<IRatingService>();
         protected IDialogService DialogService { get; } = Substitute.For<IDialogService>();
         protected IBrowserService BrowserService { get; } = Substitute.For<IBrowserService>();
         protected ILicenseProvider LicenseProvider { get; } = Substitute.For<ILicenseProvider>();
-        protected IFeedbackService FeedbackService { get; } = Substitute.For<IFeedbackService>();
         protected IBackgroundService BackgroundService { get; } = Substitute.For<IBackgroundService>();
         protected IPlatformInfo PlatformInfo { get; } = Substitute.For<IPlatformInfo>();
         protected IOnboardingStorage OnboardingStorage { get; } = Substitute.For<IOnboardingStorage>();

@@ -51,7 +51,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     PlatformInfo,
                     DialogService,
                     UserPreferences,
-                    FeedbackService,
                     AnalyticsService,
                     UserAccessManager,
                     InteractorFactory,
@@ -77,7 +76,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 bool useUserAccessManager,
                 bool useDialogService,
                 bool useUserPreferences,
-                bool useFeedbackService,
                 bool useAnalyticsService,
                 bool useInteractorFactory,
                 bool useplatformInfo,
@@ -92,7 +90,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var platformInfo = useplatformInfo ? PlatformInfo : null;
                 var dialogService = useDialogService ? DialogService : null;
                 var userPreferences = useUserPreferences ? UserPreferences : null;
-                var feedbackService = useFeedbackService ? FeedbackService : null;
                 var analyticsService = useAnalyticsService ? AnalyticsService : null;
                 var userAccessManager = useUserAccessManager ? UserAccessManager : null;
                 var onboardingStorage = useOnboardingStorage ? OnboardingStorage : null;
@@ -109,7 +106,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         platformInfo,
                         dialogService,
                         userPreferences,
-                        feedbackService,
                         analyticsService,
                         userAccessManager,
                         interactorFactory,
@@ -400,14 +396,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 TestScheduler.Start();
 
                 await NavigationService.Received()
-                    .Navigate<SelectWorkspaceViewModel, WorkspaceParameters, long>(Arg.Any<WorkspaceParameters>());
+                    .Navigate<SelectWorkspaceViewModel, long, long>(Arg.Any<long>());
             }
 
             [Fact, LogIfTooSlow]
             public async Task UpdatesTheUserWithTheReceivedWorspace()
             {
                 NavigationService
-                    .Navigate<SelectWorkspaceViewModel, WorkspaceParameters, long>(Arg.Any<WorkspaceParameters>())
+                    .Navigate<SelectWorkspaceViewModel, long, long>(Arg.Any<long>())
                     .Returns(Task.FromResult(workspaceId));
 
                 ViewModel.PickDefaultWorkspace.Execute();
@@ -423,7 +419,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public async Task StartsTheSyncAlgorithm()
             {
                 NavigationService
-                    .Navigate<SelectWorkspaceViewModel, WorkspaceParameters, long>(Arg.Any<WorkspaceParameters>())
+                    .Navigate<SelectWorkspaceViewModel, long, long>(Arg.Any<long>())
                     .Returns(Task.FromResult(workspaceId));
 
                 ViewModel.PickDefaultWorkspace.Execute();
@@ -800,16 +796,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 viewModel.IsFeedbackSuccessViewShowing.StartWith(true).Subscribe(observer);
                 viewModel.CloseFeedbackSuccessView();
                 observer.Messages.Last().Value.Value.Should().BeFalse();
-            }
-        }
-
-        public sealed class TheSubmitFeedbackUsingEmailMethod : SettingsViewModelTest
-        {
-            [Fact, LogIfTooSlow]
-            public async Task CallsTheFeedbackService()
-            {
-                await ViewModel.SubmitFeedbackUsingEmail();
-                await FeedbackService.Received().SubmitFeedback();
             }
         }
 

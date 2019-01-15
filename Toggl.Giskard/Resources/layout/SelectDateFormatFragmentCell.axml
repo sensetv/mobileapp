@@ -8,14 +8,14 @@
     android:layout_height="48dp"
     android:layout_width="match_parent">
     <RadioButton
-        local:MvxBind="Checked Selected"
+        android:id="@+id/SelectableDateFormatRadioButton"
         android:clickable="false"
         android:buttonTint="@color/checkboxTint"
         android:layout_marginLeft="18dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <TextView
-        local:MvxBind="Text DateFormat.Localized"
+        android:id="@+id/SelectableDateFormatTextView"
         tools:text="MM/DD/YYYY"
         android:textSize="15sp"
         android:lineSpacingExtra="5sp"

@@ -72,7 +72,7 @@ namespace Toggl.Daneel.ViewControllers
 
             ViewModel.CurrentMonthObservable
                 .Select(month => month.Month)
-                .Select(CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName)
+                .Select(CultureInfo.GetCultureInfo("en-US").DateTimeFormat.GetMonthName)
                 .Subscribe(CurrentMonthLabel.Rx().Text())
                 .DisposedBy(disposeBag);
 

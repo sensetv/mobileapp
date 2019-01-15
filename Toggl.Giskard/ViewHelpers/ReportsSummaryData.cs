@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Toggl.Foundation.Reports;
+using Toggl.Multivac;
 
 namespace Toggl.Giskard.ViewHelpers
 {
@@ -12,24 +13,37 @@ namespace Toggl.Giskard.ViewHelpers
         public readonly TimeSpan TotalTime;
         public readonly bool TotalTimeIsZero;
         public readonly float BillablePercentage;
+        public readonly DurationFormat DurationFormat;
 
-        private ReportsSummaryData(IReadOnlyList<ChartSegment> segments, bool showEmptyState, TimeSpan totalTime, bool totalTimeIsZero, float billablePercentage)
+        private ReportsSummaryData(
+            IReadOnlyList<ChartSegment> segments,
+            bool showEmptyState,
+            TimeSpan totalTime,
+            bool totalTimeIsZero,
+            float billablePercentage,
+            DurationFormat durationFormat)
         {
             Segments = segments;
             ShowEmptyState = showEmptyState;
             TotalTime = totalTime;
             TotalTimeIsZero = totalTimeIsZero;
             BillablePercentage = billablePercentage;
+            DurationFormat = durationFormat;
         }
 
         public static ReportsSummaryData Empty()
         {
-            return new ReportsSummaryData(ImmutableList<ChartSegment>.Empty, false, TimeSpan.Zero, true, 0f);
+            return new ReportsSummaryData(ImmutableList<ChartSegment>.Empty, false, TimeSpan.Zero, true, 0f, DurationFormat.Classic);
         }
 
-        public static ReportsSummaryData Create(IReadOnlyList<ChartSegment> segments, bool showEmptyState, TimeSpan totalTime, bool totalTimeIsZero, float? billablePercentage)
+        public static ReportsSummaryData Create(
+            IReadOnlyList<ChartSegment> segments,
+            bool showEmptyState, TimeSpan totalTime,
+            bool totalTimeIsZero,
+            float? billablePercentage,
+            DurationFormat durationFormat)
         {
-            return new ReportsSummaryData(segments, showEmptyState, totalTime, totalTimeIsZero, billablePercentage ?? 0f);
+            return new ReportsSummaryData(segments, showEmptyState, totalTime, totalTimeIsZero, billablePercentage ?? 0f, durationFormat);
         }
     }
 }

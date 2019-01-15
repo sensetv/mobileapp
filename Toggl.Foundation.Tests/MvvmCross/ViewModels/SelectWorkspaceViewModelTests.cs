@@ -4,15 +4,11 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using FsCheck;
-using FsCheck.Xunit;
 using NSubstitute;
 using Toggl.Foundation.Models.Interfaces;
-using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Foundation.Tests.Generators;
 using Toggl.Multivac.Extensions;
-using Toggl.PrimeRadiant.Models;
 using Xunit;
 
 namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
@@ -22,7 +18,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class SelectWorkspaceViewModelTest : BaseViewModelTests<SelectWorkspaceViewModel>
         {
             protected override SelectWorkspaceViewModel CreateViewModel()
-                => new SelectWorkspaceViewModel(InteractorFactory, NavigationService);
+                => new SelectWorkspaceViewModel(InteractorFactory, NavigationService, RxActionFactory);
 
             protected List<IThreadSafeWorkspace> GenerateWorkspaceList() =>
                 Enumerable.Range(0, 10).Select(i =>
@@ -39,13 +35,17 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         {
             [Theory, LogIfTooSlow]
             [ConstructorData]
-            public void ThrowsIfAnyOfTheArgumentsIsNull(bool useInteractorFactory, bool useNavigationService)
+            public void ThrowsIfAnyOfTheArgumentsIsNull(
+                bool useInteractorFactory,
+                bool useNavigationService,
+                bool useRxActionFactory)
             {
                 var interactorFactory = useInteractorFactory ? InteractorFactory : null;
                 var navigationService = useNavigationService ? NavigationService : null;
+                var rxActionFactory = useRxActionFactory ? RxActionFactory : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new SelectWorkspaceViewModel(interactorFactory, navigationService);
+                    () => new SelectWorkspaceViewModel(interactorFactory, navigationService, rxActionFactory);
 
                 tryingToConstructWithEmptyParameters
                     .Should().Throw<ArgumentNullException>();
@@ -64,41 +64,27 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public async Task SetsTheDefaultWorkspaceId()
             {
                 const long expectedId = 8;
-                var parameters = WorkspaceParameters.Create(expectedId, "", true);
 
-                ViewModel.Prepare(parameters);
+                ViewModel.Prepare(expectedId);
 
                 await ViewModel.Initialize();
-                ViewModel.Suggestions.Single(x => x.Selected).WorkspaceId.Should().Be(expectedId);
+                ViewModel.Workspaces.Single(x => x.Selected).WorkspaceId.Should().Be(expectedId);
             }
+        }
 
-            [Theory, LogIfTooSlow]
-            [InlineData(true)]
-            [InlineData(false)]
-            public void SetsTheAllowsQueryingProperty(bool allowsQuerying)
+        public sealed class TheTitleProperty : SelectWorkspaceViewModelTest
+        {
+            [Fact, LogIfTooSlow]
+            public void HasCorrectValue()
             {
-                var parameters = WorkspaceParameters.Create(10, "", allowsQuerying);
-
-                ViewModel.Prepare(parameters);
-
-                ViewModel.AllowQuerying.Should().Be(allowsQuerying);
-            }
-
-            [Property]
-            public void SetsTheTitle(NonEmptyString title)
-            {
-                var parameters = WorkspaceParameters.Create(10, title.Get, false);
-
-                ViewModel.Prepare(parameters);
-
-                ViewModel.Title.Should().Be(title.Get);
+                ViewModel.Title.Should().Be(Resources.SetDefaultWorkspace);
             }
         }
 
         public sealed class TheInitializeMethod : SelectWorkspaceViewModelTest
         {
             [Fact, LogIfTooSlow]
-            public async Task AddsEligibleWorkspacesToTheListOfSuggestions()
+            public async Task AddsEligibleWorkspacesToTheList()
             {
                 var workspaces = GenerateWorkspaceList();
                 var eligibleWorkspaces = workspaces.Where(ws => ws.IsEligibleForProjectCreation());
@@ -107,18 +93,18 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 await ViewModel.Initialize();
 
-                ViewModel.Suggestions.Should().HaveCount(eligibleWorkspaces.Count());
+                ViewModel.Workspaces.Should().HaveCount(eligibleWorkspaces.Count());
             }
         }
 
-        public sealed class TheCloseCommand : SelectWorkspaceViewModelTest
+        public sealed class TheCloseAction : SelectWorkspaceViewModelTest
         {
             [Fact, LogIfTooSlow]
             public async Task ClosesTheViewModel()
             {
                 await ViewModel.Initialize();
 
-                await ViewModel.CloseCommand.ExecuteAsync();
+                ViewModel.Close.Execute();
 
                 await NavigationService.Received()
                     .Close(Arg.Is(ViewModel), Arg.Any<long>());
@@ -128,18 +114,17 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public async Task ReturnsTheWorkspacePassedOnPrepare()
             {
                 const long expectedId = 10;
-                var parameters = WorkspaceParameters.Create(expectedId, "", true);
-                ViewModel.Prepare(parameters);
+                ViewModel.Prepare(expectedId);
                 await ViewModel.Initialize();
 
-                ViewModel.CloseCommand.ExecuteAsync().Wait();
+                ViewModel.Close.Execute();
 
                 await NavigationService.Received()
                     .Close(Arg.Is(ViewModel), expectedId);
             }
         }
 
-        public sealed class TheSelectWorkspaceCommand : SelectWorkspaceViewModelTest
+        public sealed class TheSelectWorkspaceAction : SelectWorkspaceViewModelTest
         {
             private readonly IThreadSafeWorkspace Workspace = Substitute.For<IThreadSafeWorkspace>();
 
@@ -148,7 +133,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 var selectableWorkspace = new SelectableWorkspaceViewModel(Workspace, true);
 
-                ViewModel.SelectWorkspaceCommand.Execute(selectableWorkspace);
+                ViewModel.SelectWorkspace.Execute(selectableWorkspace);
 
                 await NavigationService.Received()
                     .Close(Arg.Is(ViewModel), Arg.Any<long>());
@@ -162,27 +147,12 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 Workspace.IsEligibleForProjectCreation().Returns(true);
                 var selectableWorkspace = new SelectableWorkspaceViewModel(Workspace, true);
 
-                ViewModel.SelectWorkspaceCommand.Execute(selectableWorkspace);
+                ViewModel.SelectWorkspace.Execute(selectableWorkspace);
 
                 await NavigationService.Received().Close(
                     Arg.Is(ViewModel),
                     Arg.Is(expectedId)
                 );
-            }
-        }
-
-        public sealed class TheTextProperty : SelectWorkspaceViewModelTest
-        {
-            [Fact, LogIfTooSlow]
-            public async Task FiltersTheSuggestionsWhenItChanges()
-            {
-                var workspaces = GenerateWorkspaceList();
-                InteractorFactory.GetAllWorkspaces().Execute().Returns(Observable.Return(workspaces));
-                await ViewModel.Initialize();
-
-                ViewModel.Text = "5";
-
-                ViewModel.Suggestions.Should().HaveCount(1);
             }
         }
     }

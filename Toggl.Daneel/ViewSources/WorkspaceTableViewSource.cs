@@ -1,39 +1,33 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Reactive.Linq;
 using Foundation;
-using MvvmCross.Platforms.Ios.Binding.Views;
 using Toggl.Daneel.Views;
+using Toggl.Foundation.MvvmCross.ViewModels;
 using UIKit;
 
 namespace Toggl.Daneel.ViewSources
 {
-    public sealed class WorkspaceTableViewSource : MvxTableViewSource
+    public sealed class WorkspaceTableViewSource : ListTableViewSource<SelectableWorkspaceViewModel, WorkspaceViewCell>
     {
         private const int rowHeight = 64;
-        private const int headerHeight = 45;
-        private const string cellIdentifier = nameof(WorkspaceViewCell);
 
-        public WorkspaceTableViewSource(UITableView tableView)
-            : base(tableView)
+        public IObservable<SelectableWorkspaceViewModel> WorkspaceSelected
+            => Observable
+                .FromEventPattern<SelectableWorkspaceViewModel>(e => OnItemTapped += e, e => OnItemTapped -= e)
+                .Select(e => e.EventArgs);
+
+        public WorkspaceTableViewSource()
+            : base(new ImmutableArray<SelectableWorkspaceViewModel>(), WorkspaceViewCell.Identifier)
         {
-            tableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
-            tableView.RegisterNibForCellReuse(WorkspaceViewCell.Nib, cellIdentifier);
         }
 
-        public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
+        public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath) => rowHeight;
+
+        public void SetNewWorkspaces(IEnumerable<SelectableWorkspaceViewModel> workspaces)
         {
-            var item = GetItemAt(indexPath);
-            var cell = GetOrCreateCellFor(tableView, indexPath, item);
-            cell.SelectionStyle = UITableViewCellSelectionStyle.None;
-
-            if (item != null && cell is IMvxBindable bindable)
-                bindable.DataContext = item;
-
-            return cell;
+            items = workspaces.ToImmutableList();
         }
-
-        protected override UITableViewCell GetOrCreateCellFor(UITableView tableView, NSIndexPath indexPath, object item)
-            => tableView.DequeueReusableCell(cellIdentifier, indexPath);
-
-        public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath) => 48;
     }
 }

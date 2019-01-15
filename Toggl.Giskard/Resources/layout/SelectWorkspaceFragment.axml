@@ -2,7 +2,6 @@
 <FrameLayout
     xmlns:local="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    local:MvxBind="Click CloseCommand"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <android.support.v7.widget.CardView
@@ -15,10 +14,9 @@
         android:layout_marginRight="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <mvvmcross.droid.support.v7.recyclerview.MvxRecyclerView
-            local:MvxBind="ItemsSource Suggestions; ItemClick SelectWorkspaceCommand"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/SelectWorkspaceRecyclerView"
             android:scrollbars="vertical"
-            local:MvxTemplateSelector="@string/SelectWorkspaceTemplateSelector"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </android.support.v7.widget.CardView>

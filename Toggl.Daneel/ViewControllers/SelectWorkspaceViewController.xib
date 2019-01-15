@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SelectWorkspaceViewController">
             <connections>
-                <outlet property="BottomConstraint" destination="Rgf-Cd-VPl" id="okG-KN-22M"/>
                 <outlet property="CloseButton" destination="94q-32-ilW" id="4yA-cp-4sm"/>
-                <outlet property="SearchTextField" destination="pKP-3u-mLF" id="tsl-Fl-JSB"/>
-                <outlet property="SuggestionsTableView" destination="B7I-ux-qEU" id="wgR-bE-slN"/>
-                <outlet property="SuggestionsTableViewConstraint" destination="lba-pA-k6q" id="9uT-u3-cjL"/>
                 <outlet property="TitleLabel" destination="FcU-u4-UiR" id="Wfb-y7-J0F"/>
+                <outlet property="WorkspaceTableView" destination="B7I-ux-qEU" id="Rmc-Gk-ZWK"/>
                 <outlet property="view" destination="2" id="RRd-Eg-VrN"/>
             </connections>
         </placeholder>
@@ -39,29 +36,12 @@
                     </constraints>
                     <state key="normal" image="icClose"/>
                 </button>
-                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Filter workspaces" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="pKP-3u-mLF">
-                    <rect key="frame" x="36" y="54.5" width="323" height="48"/>
-                    <color key="tintColor" red="0.29803921570000003" green="0.85098039219999999" blue="0.3921568627" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="48" id="UwW-g7-07v"/>
-                    </constraints>
-                    <nil key="textColor"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                    <textInputTraits key="textInputTraits"/>
-                </textField>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="search" translatesAutoresizingMaskIntoConstraints="NO" id="T4O-ge-wrV">
-                    <rect key="frame" x="16" y="72.5" width="12" height="12"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="12" id="06D-0p-KQB"/>
-                        <constraint firstAttribute="height" constant="12" id="jcg-Qr-zKU"/>
-                    </constraints>
-                </imageView>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="B7I-ux-qEU">
-                    <rect key="frame" x="0.0" y="102.5" width="375" height="564.5"/>
+                    <rect key="frame" x="0.0" y="54.5" width="375" height="612.5"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </tableView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fpE-1M-0Da" userLabel="Separator">
-                    <rect key="frame" x="0.0" y="102.5" width="375" height="1"/>
+                    <rect key="frame" x="0.0" y="54.5" width="375" height="1"/>
                     <color key="backgroundColor" red="0.90980392160000001" green="0.90980392160000001" blue="0.90980392160000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="1" id="zal-tM-JOm"/>
@@ -71,19 +51,14 @@
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="FcU-u4-UiR" firstAttribute="centerX" secondItem="2" secondAttribute="centerX" id="5Qa-Xe-zN8"/>
-                <constraint firstItem="pKP-3u-mLF" firstAttribute="top" secondItem="FcU-u4-UiR" secondAttribute="bottom" constant="24" id="6cY-oI-Ovm"/>
                 <constraint firstAttribute="trailing" secondItem="fpE-1M-0Da" secondAttribute="trailing" id="FST-k6-A15"/>
-                <constraint firstItem="pKP-3u-mLF" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="36" id="Fi8-en-udc"/>
-                <constraint firstItem="T4O-ge-wrV" firstAttribute="centerY" secondItem="pKP-3u-mLF" secondAttribute="centerY" id="Gl6-Ye-YAc"/>
                 <constraint firstItem="94q-32-ilW" firstAttribute="top" secondItem="2" secondAttribute="top" id="MIN-0W-JGC"/>
                 <constraint firstItem="FcU-u4-UiR" firstAttribute="centerY" secondItem="94q-32-ilW" secondAttribute="centerY" id="Mil-pB-Cd6"/>
-                <constraint firstAttribute="bottom" secondItem="B7I-ux-qEU" secondAttribute="bottom" id="Rgf-Cd-VPl"/>
-                <constraint firstItem="T4O-ge-wrV" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="16" id="gYb-F2-app"/>
+                <constraint firstAttribute="bottom" secondItem="B7I-ux-qEU" secondAttribute="bottom" id="c0Y-EF-gVm"/>
                 <constraint firstItem="B7I-ux-qEU" firstAttribute="leading" secondItem="2" secondAttribute="leading" id="hS3-w0-NRO"/>
                 <constraint firstItem="94q-32-ilW" firstAttribute="leading" secondItem="2" secondAttribute="leading" id="hYc-Ma-cBC"/>
-                <constraint firstAttribute="trailing" secondItem="pKP-3u-mLF" secondAttribute="trailing" constant="16" id="jia-Gm-5hs"/>
                 <constraint firstItem="fpE-1M-0Da" firstAttribute="top" secondItem="B7I-ux-qEU" secondAttribute="top" id="lIx-VA-QEI"/>
-                <constraint firstItem="B7I-ux-qEU" firstAttribute="top" secondItem="FcU-u4-UiR" secondAttribute="bottom" constant="72" id="lba-pA-k6q"/>
+                <constraint firstItem="B7I-ux-qEU" firstAttribute="top" secondItem="FcU-u4-UiR" secondAttribute="bottom" constant="24" id="lba-pA-k6q"/>
                 <constraint firstAttribute="trailing" secondItem="B7I-ux-qEU" secondAttribute="trailing" id="s3F-H5-6x0"/>
                 <constraint firstItem="fpE-1M-0Da" firstAttribute="leading" secondItem="2" secondAttribute="leading" id="yiT-Fk-Fmp"/>
             </constraints>
@@ -92,6 +67,5 @@
     </objects>
     <resources>
         <image name="icClose" width="10" height="10"/>
-        <image name="search" width="13" height="12"/>
     </resources>
 </document>

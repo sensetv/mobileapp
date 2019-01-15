@@ -52,7 +52,6 @@ namespace Toggl.Foundation.Tests
                 var database = useDatabase ? Substitute.For<ITogglDatabase>() : null;
                 var apiFactory = useApiFactory ? Substitute.For<IApiFactory>() : null;
                 var timeService = useTimeService ? Substitute.For<ITimeService>() : null;
-                var mailService = useMailService ? Substitute.For<IMailService>() : null;
                 var platformInfo = usePlatformInfo ? Substitute.For<IPlatformInfo>() : null;
                 var ratinService = useRatingService ? Substitute.For<IRatingService>() : null;
                 var googleService = useGoogleService ? Substitute.For<IGoogleService>() : null;
@@ -76,7 +75,6 @@ namespace Toggl.Foundation.Tests
                         .WithScheduler(scheduler)
                         .WithApiFactory(apiFactory)
                         .WithTimeService(timeService)
-                        .WithMailService(mailService)
                         .WithPlatformInfo(platformInfo)
                         .WithRatingService(ratinService)
                         .WithGoogleService(googleService)
@@ -107,7 +105,6 @@ namespace Toggl.Foundation.Tests
                 var agent = new UserAgent("Some Client", "1.0");
                 var database = Substitute.For<ITogglDatabase>();
                 var timeService = Substitute.For<ITimeService>();
-                var mailService = Substitute.For<IMailService>();
                 var platformInfo = Substitute.For<IPlatformInfo>();
                 var ratingService = Substitute.For<IRatingService>();
                 var googleService = Substitute.For<IGoogleService>();
@@ -133,7 +130,6 @@ namespace Toggl.Foundation.Tests
                         .WithScheduler(scheduler)
                         .WithApiFactory(apiFactory)
                         .WithTimeService(timeService)
-                        .WithMailService(mailService)
                         .WithPlatformInfo(platformInfo)
                         .WithRatingService(ratingService)
                         .WithGoogleService(googleService)

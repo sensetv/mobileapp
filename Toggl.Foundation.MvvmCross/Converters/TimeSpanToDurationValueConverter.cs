@@ -9,6 +9,6 @@ namespace Toggl.Foundation.MvvmCross.Converters
     public sealed class TimeSpanToDurationValueConverter : MvxValueConverter<TimeSpan, string>
     {
         protected override string Convert(TimeSpan value, Type targetType, object parameter, CultureInfo culture)
-            => $"{(int)value.TotalHours}:{value.Minutes.ToString("D2")}:{value.Seconds.ToString("D2")}";
+            => $"{(int)value.TotalHours}:{value.Minutes.ToString("D2", CultureInfo.InvariantCulture)}:{value.Seconds.ToString("D2", CultureInfo.InvariantCulture)}";
     }
 }

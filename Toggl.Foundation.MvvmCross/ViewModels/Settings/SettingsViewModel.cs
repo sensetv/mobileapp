@@ -43,7 +43,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IUserAccessManager userAccessManager;
         private readonly IDialogService dialogService;
         private readonly IUserPreferences userPreferences;
-        private readonly IFeedbackService feedbackService;
         private readonly IAnalyticsService analyticsService;
         private readonly IPlatformInfo platformInfo;
         private readonly IOnboardingStorage onboardingStorage;
@@ -101,7 +100,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IPlatformInfo platformInfo,
             IDialogService dialogService,
             IUserPreferences userPreferences,
-            IFeedbackService feedbackService,
             IAnalyticsService analyticsService,
             IUserAccessManager userAccessManager,
             IInteractorFactory interactorFactory,
@@ -116,7 +114,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             Ensure.Argument.IsNotNull(platformInfo, nameof(platformInfo));
             Ensure.Argument.IsNotNull(dialogService, nameof(dialogService));
             Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
-            Ensure.Argument.IsNotNull(feedbackService, nameof(feedbackService));
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
             Ensure.Argument.IsNotNull(onboardingStorage, nameof(onboardingStorage));
             Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
@@ -131,7 +128,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.platformInfo = platformInfo;
             this.dialogService = dialogService;
             this.userPreferences = userPreferences;
-            this.feedbackService = feedbackService;
             this.rxActionFactory = rxActionFactory;
             this.analyticsService = analyticsService;
             this.interactorFactory = interactorFactory;
@@ -258,11 +254,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public void CloseFeedbackSuccessView()
         {
             isFeedbackSuccessViewShowing.OnNext(false);
-        }
-
-        public async Task SubmitFeedbackUsingEmail()
-        {
-            feedbackService.SubmitFeedback();
         }
 
         private Task selectDefaultWorkspace(SelectableWorkspaceViewModel workspace)
@@ -411,10 +402,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 .TrackException<InvalidOperationException, IThreadSafeWorkspace>("SettingsViewModel.PickDefaultWorkspace")
                 .Execute();
 
-            var parameters = WorkspaceParameters.Create(defaultWorkspace.Id, Resources.SetDefaultWorkspace, allowQuerying: false);
             var selectedWorkspaceId =
                 await navigationService
-                    .Navigate<SelectWorkspaceViewModel, WorkspaceParameters, long>(parameters);
+                    .Navigate<SelectWorkspaceViewModel, long, long>(defaultWorkspace.Id);
 
             await changeDefaultWorkspace(selectedWorkspaceId);
         }

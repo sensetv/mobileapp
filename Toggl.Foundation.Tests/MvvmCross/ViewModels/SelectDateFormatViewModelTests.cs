@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using MvvmCross.Navigation;
 using NSubstitute;
+using Toggl.Foundation.MvvmCross;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Foundation.MvvmCross.ViewModels.Selectable;
+using Toggl.Foundation.Services;
+using Toggl.Foundation.Tests.Generators;
 using Toggl.Multivac;
 using Xunit;
 
@@ -14,16 +18,20 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class SelectDateFormatViewModelTest : BaseViewModelTests<SelectDateFormatViewModel>
         {
             protected override SelectDateFormatViewModel CreateViewModel()
-                => new SelectDateFormatViewModel(NavigationService);
+                => new SelectDateFormatViewModel(NavigationService, RxActionFactory);
         }
 
         public sealed class TheConstructor
         {
-            [Fact, LogIfTooSlow]
-            public void ThrowsIfTheArgumentIsNull()
+            [Theory, LogIfTooSlow]
+            [ConstructorData]
+            public void ThrowsIfTheArgumentIsNull(bool useNavigationService, bool useRxActionFactory)
             {
+                var navigationService = useNavigationService ? Substitute.For<IMvxNavigationService>() : null;
+                var rxActionFactory = useRxActionFactory ? Substitute.For<IRxActionFactory>() : null;
+
                 Action tryingToConstructWithEmptyParameter =
-                    () => new SelectDateFormatViewModel(null);
+                    () => new SelectDateFormatViewModel(navigationService, rxActionFactory);
 
                 tryingToConstructWithEmptyParameter.Should().Throw<ArgumentNullException>();
             }
@@ -50,7 +58,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var defaultResult = DateFormat.FromLocalizedDateFormat("YYYY.MM.DD");
                 ViewModel.Prepare(defaultResult);
 
-                await ViewModel.CloseCommand.ExecuteAsync();
+                ViewModel.Close.Execute();
+                TestScheduler.Start();
 
                 await NavigationService.Received().Close(ViewModel, defaultResult);
             }
@@ -64,7 +73,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var selectedDateFormat = DateFormat.FromLocalizedDateFormat("DD.MM.YYYY");
                 var selectableDateFormatViewModel = new SelectableDateFormatViewModel(selectedDateFormat, false);
 
-                await ViewModel.SelectFormatCommand.ExecuteAsync(selectableDateFormatViewModel);
+                ViewModel.SelectDateFormat.Execute(selectableDateFormatViewModel);
+                TestScheduler.Start();
 
                 await NavigationService.Received().Close(ViewModel, selectedDateFormat);    
             }

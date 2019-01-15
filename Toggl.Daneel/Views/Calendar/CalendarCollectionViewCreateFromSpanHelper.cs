@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using CoreGraphics;
@@ -25,7 +26,10 @@ namespace Toggl.Daneel.Views.Calendar
         private CGPoint firstPoint;
 
         private readonly ISubject<(DateTimeOffset, TimeSpan)> createFromSpanSuject = new Subject<(DateTimeOffset, TimeSpan)>();
+
         public IObservable<(DateTimeOffset, TimeSpan)> CreateFromSpan => createFromSpanSuject.AsObservable();
+
+        private List<DateTimeOffset> allItemsStartAndEndTime;
 
         public CalendarCollectionViewCreateFromSpanHelper(
             UICollectionView collectionView,
@@ -81,6 +85,8 @@ namespace Toggl.Daneel.Views.Calendar
             if (dataSource.IsEditing || dataSource.CalendarItemAtPoint(point) != null)
                 return;
 
+            allItemsStartAndEndTime = dataSource.AllItemsStartAndEndTime();
+
             dataSource.StartEditing();
             firstPoint = point;
             LastPoint = point;
@@ -97,9 +103,6 @@ namespace Toggl.Daneel.Views.Calendar
             if (itemIndexPath == null)
                 return;
 
-            if (Math.Abs(LastPoint.Y - point.Y) < CalendarCollectionViewLayout.HourHeight / 4)
-                return;
-
             LastPoint = point;
 
             DateTimeOffset startTime;
@@ -108,7 +111,7 @@ namespace Toggl.Daneel.Views.Calendar
             if (isDraggingDown(point))
             {
                 startTime = Layout.DateAtPoint(firstPoint).RoundDownToClosestQuarter();
-                endTime = Layout.DateAtPoint(LastPoint).RoundUpToClosestQuarter();
+                endTime = NewEndTimeWithDynamicDuration(point, allItemsStartAndEndTime);
 
                 if (point.Y > BottomAutoScrollLine)
                     StartAutoScrolDown(longPressChanged);
@@ -117,7 +120,7 @@ namespace Toggl.Daneel.Views.Calendar
             }
             else
             {
-                startTime = Layout.DateAtPoint(LastPoint).RoundDownToClosestQuarter();
+                startTime = NewStartTimeWithDynamicDuration(point, allItemsStartAndEndTime);
                 endTime = Layout.DateAtPoint(firstPoint).RoundDownToClosestQuarter();
 
                 if (point.Y < TopAutoScrollLine)

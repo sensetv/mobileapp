@@ -1,6 +1,5 @@
 using System;
 using System.Reactive;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Android.Graphics;
 using Android.Graphics.Drawables;
@@ -11,12 +10,13 @@ using Android.Text.Style;
 using Android.Views;
 using Android.Widget;
 using MvvmCross.Plugin.Color.Platforms.Android;
-using Toggl.Foundation.MvvmCross.ViewModels.Reports;
+using Toggl.Foundation.Extensions;
 using Toggl.Giskard.Extensions;
 using Toggl.Giskard.ViewHelpers;
-using Toggl.Giskard.ViewHolders;
 using Toggl.Giskard.Views;
+using Toggl.Multivac;
 using static Toggl.Foundation.MvvmCross.Helper.Color.Reports;
+using Color = Android.Graphics.Color;
 
 namespace Toggl.Giskard.ViewHolders
 {
@@ -67,7 +67,7 @@ namespace Toggl.Giskard.ViewHolders
 
         protected override void UpdateView()
         {
-            reportsSummaryTotal.TextFormatted = convertReportTimeSpanToDurationString(Item.TotalTime);
+            reportsSummaryTotal.TextFormatted = convertReportTimeSpanToDurationString(Item.TotalTime, Item.DurationFormat);
             reportsTotalChartImageDrawable.SetColorFilter(Item.TotalTimeIsZero ? Disabled.ToNativeColor() : TotalTimeActivated.ToNativeColor(), PorterDuff.Mode.SrcIn);
             reportsSummaryBillable.TextFormatted = convertBillablePercentageToSpannable(Item.BillablePercentage);
             updateBillablePercentageViewWidth();
@@ -92,27 +92,32 @@ namespace Toggl.Giskard.ViewHolders
             });
         }
 
-        public ISpannable convertReportTimeSpanToDurationString(TimeSpan timeSpan)
+        public ISpannable convertReportTimeSpanToDurationString(TimeSpan timeSpan, DurationFormat durationFormat)
         {
-            var timeString = $"{(int)timeSpan.TotalHours}:{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}";
-            var lengthOfHours = ((int)timeSpan.TotalHours).ToString().Length;
+            var timeString = timeSpan.ToFormattedString(durationFormat);
+
+            var emphasizedPartLength = durationFormat == DurationFormat.Improved 
+                ? timeString.Length - 3
+                : timeString.Length;
 
             var isDisabled = timeSpan.Ticks == 0;
 
-            return selectTimeSpanEnabledStateSpan(timeString, lengthOfHours, isDisabled);
+            return selectTimeSpanEnabledStateSpan(timeString, emphasizedPartLength, isDisabled);
         }
 
-        private ISpannable selectTimeSpanEnabledStateSpan(string timeString, int lengthOfHours, bool isDisabled)
+        private ISpannable selectTimeSpanEnabledStateSpan(string timeString, int emphasizedPartLength, bool isDisabled)
         {
             var color = isDisabled ? disabledColor : timeSpanNormalColor;
 
-                        var spannable = new SpannableString(timeString);
-                        var hourSpanEnd = lengthOfHours + 3;
-                        spannable.SetSpan(new TypefaceSpan("sans-serif"), 0, hourSpanEnd, SpanTypes.InclusiveInclusive);
-                        spannable.SetSpan(new TypefaceSpan("sans-serif-light"), hourSpanEnd, hourSpanEnd + 3, SpanTypes.InclusiveInclusive);
-                        spannable.SetSpan(new ForegroundColorSpan(color), 0, spannable.Length(), SpanTypes.InclusiveInclusive);
+            var spannable = new SpannableString(timeString);
+            spannable.SetSpan(new TypefaceSpan("sans-serif"), 0, emphasizedPartLength, SpanTypes.InclusiveInclusive);
+            if (emphasizedPartLength < timeString.Length)
+            {
+                spannable.SetSpan(new TypefaceSpan("sans-serif-light"), emphasizedPartLength, timeString.Length, SpanTypes.InclusiveInclusive);
+            }
+            spannable.SetSpan(new ForegroundColorSpan(color), 0, spannable.Length(), SpanTypes.InclusiveInclusive);
 
-                        return spannable;
+            return spannable;
         }
 
         public ISpannable convertBillablePercentageToSpannable(float? value)

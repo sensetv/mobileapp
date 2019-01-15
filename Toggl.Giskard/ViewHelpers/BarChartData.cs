@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using Toggl.Foundation.Conversions;
 using Toggl.Foundation.MvvmCross.ViewModels.Reports;
@@ -17,15 +18,15 @@ namespace Toggl.Giskard.ViewHelpers
 
         private BarChartData(DateTimeOffset startDate, DateTimeOffset endDate, bool workspaceIsBillable, DateFormat dateFormat, BarViewModel[] bars, int maximumHoursPerBar, DateTimeOffset[] horizontalLegend)
         {
-            StartDate = startDate.ToString(dateFormat.Short);
-            EndDate = endDate.ToString(dateFormat.Short);
+            StartDate = startDate.ToString(dateFormat.Short, CultureInfo.InvariantCulture);
+            EndDate = endDate.ToString(dateFormat.Short, CultureInfo.InvariantCulture);
             Bars = bars;
             MaximumHoursPerBar = maximumHoursPerBar;
             WorkspaceIsBillable = workspaceIsBillable;
             if (horizontalLegend != null)
             {
                 HorizontalLabels = horizontalLegend
-                    .Select(date => new BarChartDayLabel(DateTimeOffsetConversion.ToDayOfWeekInitial(date), date.ToString(dateFormat.Short)))
+                    .Select(date => new BarChartDayLabel(DateTimeOffsetConversion.ToDayOfWeekInitial(date), date.ToString(dateFormat.Short, CultureInfo.InvariantCulture)))
                     .ToArray();
             }
             else

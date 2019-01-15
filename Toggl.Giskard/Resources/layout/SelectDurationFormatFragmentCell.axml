@@ -9,7 +9,7 @@
     android:layout_height="48dp"
     android:layout_width="match_parent">
     <RadioButton
-        local:MvxBind="Checked Selected"
+        android:id="@+id/SelectableDurationFormatRadioButton"
         tools:selected="true"
         android:checked="true"
         android:clickable="false"
@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <TextView
-        local:MvxBind="Text DurationFormatToString(DurationFormat)"
+        android:id="@+id/SelectableDurationFormatTextView"
         android:textSize="15sp"
         tools:text="Improved (0:47:06)"
         android:lineSpacingExtra="5sp"

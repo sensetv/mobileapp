@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using CoreGraphics;
 using Foundation;
 using Intents;
@@ -143,8 +144,8 @@ namespace Toggl.Daneel.SiriExtension.UI
 
             var startTime = DateTimeOffset.FromUnixTimeSeconds(response.EntryStart.LongValue).ToLocalTime();
             var endTime = DateTimeOffset.FromUnixTimeSeconds(response.EntryStart.LongValue + response.EntryDuration.LongValue).ToLocalTime();
-            var fromTime = startTime.ToString("HH:mm");
-            var toTime = endTime.ToString("HH:mm");
+            var fromTime = startTime.ToString("HH:mm", CultureInfo.InvariantCulture);
+            var toTime = endTime.ToString("HH:mm", CultureInfo.InvariantCulture);
             var timeFrameString = new NSAttributedString($"\n{fromTime} - {toTime}", regularAttributes);
 
             attributedString.Append(timeFrameString);
@@ -169,7 +170,7 @@ namespace Toggl.Daneel.SiriExtension.UI
         private string secondsToString(Double seconds)
         {
             var timeSpan = TimeSpan.FromSeconds(seconds);
-            return timeSpan.ToString(@"hh\:mm\:ss");
+            return timeSpan.ToString(@"hh\:mm\:ss", CultureInfo.InvariantCulture);
         }
     }
 }

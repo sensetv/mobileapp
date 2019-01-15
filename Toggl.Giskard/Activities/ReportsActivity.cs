@@ -61,6 +61,7 @@ namespace Toggl.Giskard.Activities
                     ViewModel.TotalTimeObservable,
                     ViewModel.TotalTimeIsZeroObservable,
                     ViewModel.BillablePercentageObservable,
+                    ViewModel.DurationFormatObservable,
                     ReportsSummaryData.Create)
                 .Subscribe(reportsRecyclerAdapter.UpdateReportsSummary)
                 .DisposedBy(DisposeBag);

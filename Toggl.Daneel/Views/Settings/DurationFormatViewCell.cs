@@ -3,13 +3,15 @@ using Foundation;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Platforms.Ios.Binding;
 using MvvmCross.Platforms.Ios.Binding.Views;
+using Toggl.Daneel.Cells;
 using Toggl.Foundation.MvvmCross.Converters;
+using Toggl.Foundation.MvvmCross.Transformations;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using UIKit;
 
 namespace Toggl.Daneel.Views.Settings
 {
-    public sealed partial class DurationFormatViewCell : MvxTableViewCell
+    public sealed partial class DurationFormatViewCell : BaseTableViewCell<SelectableDurationFormatViewModel>
     {
         public static readonly NSString Key = new NSString(nameof(DurationFormatViewCell));
         public static readonly UINib Nib;
@@ -27,21 +29,14 @@ namespace Toggl.Daneel.Views.Settings
         public override void AwakeFromNib()
         {
             base.AwakeFromNib();
+            DurationFormatLabel.Text = string.Empty;
+            SelectedImageView.Hidden = true;
+        }
 
-            this.DelayBind(() =>
-            {
-                var bindingSet = this.CreateBindingSet<DurationFormatViewCell, SelectableDurationFormatViewModel>();
-
-                bindingSet.Bind(DurationFormatLabel)
-                          .To(vm => vm.DurationFormat)
-                          .WithConversion(new DurationFormatToStringValueConverter());
-
-                bindingSet.Bind(SelectedImageView)
-                          .For(v => v.BindVisible())
-                          .To(vm => vm.Selected);
-
-                bindingSet.Apply();
-            });
+        protected override void UpdateView()
+        {
+            DurationFormatLabel.Text = DurationFormatToString.Convert(Item.DurationFormat);
+            SelectedImageView.Hidden = !Item.Selected;
         }
     }
 }

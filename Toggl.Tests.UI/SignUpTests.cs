@@ -21,7 +21,7 @@ namespace Toggl.Tests.UI
         }
 
         [Test]
-        public void TheAcceptTermsAndConditionsButtonAfterInputtingValidCredentialsShowsTheMainScreen()
+        public void SigningUpWithCorrectCredentialsLeadsToTheMainScreen()
         {
             var email = randomEmail();
             var password = "qwerty123";
@@ -39,7 +39,7 @@ namespace Toggl.Tests.UI
         }
 
         [Test]
-        public async Task TheAcceptTermsAndConditionsButtonAfterInputtingInvalidCredentialsShowsTheErrorLabel()
+        public async Task SigningUpWithExistingAccountShowsTheErrorLabel()
         {
             var email = randomEmail();
             var password = await User.Create(email);
@@ -57,7 +57,7 @@ namespace Toggl.Tests.UI
         }
 
         [Test]
-        public void TheRejectTermsAndConditionsButtonDoesNothing()
+        public void RejectingTermsAndConditionsCancelsSignUp()
         {
             var email = randomEmail();
             var password = "asdads";

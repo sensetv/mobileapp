@@ -3,15 +3,16 @@ using Foundation;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Platforms.Ios.Binding;
 using MvvmCross.Platforms.Ios.Binding.Views;
+using Toggl.Daneel.Cells;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.PrimeRadiant.Models;
 using UIKit;
 
 namespace Toggl.Daneel.Views
 {
-    public partial class WorkspaceViewCell : MvxTableViewCell
+    public partial class WorkspaceViewCell : BaseTableViewCell<SelectableWorkspaceViewModel>
     {
-        public static readonly NSString Key = new NSString(nameof(WorkspaceViewCell));
+        public static readonly string Identifier = nameof(WorkspaceViewCell);
         public static readonly UINib Nib;
 
         static WorkspaceViewCell()
@@ -27,19 +28,13 @@ namespace Toggl.Daneel.Views
         public override void AwakeFromNib()
         {
             base.AwakeFromNib();
+            SelectionStyle = UITableViewCellSelectionStyle.None;
+        }
 
-            this.DelayBind(() =>
-            {
-                var bindingSet = this.CreateBindingSet<WorkspaceViewCell, SelectableWorkspaceViewModel>();
-
-                bindingSet.Bind(NameLabel).To(vm => vm.WorkspaceName);
-
-                bindingSet.Bind(SelectedImage)
-                          .For(v => v.BindVisible())
-                          .To(vm => vm.Selected);
-
-                bindingSet.Apply();
-            });
+        protected override void UpdateView()
+        {
+            NameLabel.Text = Item.WorkspaceName;
+            SelectedImage.Hidden = !Item.Selected;
         }
     }
 }

@@ -1,9 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections.Immutable;
+using System.Linq;
 using System.Threading.Tasks;
-using MvvmCross.Commands;
 using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
 using Toggl.Foundation.MvvmCross.ViewModels.Selectable;
+using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 
@@ -25,24 +26,25 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private DateFormat defaultResult;
 
-        public SelectableDateFormatViewModel[] DateTimeFormats { get; }
+        public ImmutableList<SelectableDateFormatViewModel> DateTimeFormats { get; }
 
-        public IMvxAsyncCommand CloseCommand { get; }
+        public UIAction Close { get; }
 
-        public IMvxAsyncCommand<SelectableDateFormatViewModel> SelectFormatCommand { get; }
+        public InputAction<SelectableDateFormatViewModel> SelectDateFormat { get; }
 
-        public SelectDateFormatViewModel(IMvxNavigationService navigationService)
+        public SelectDateFormatViewModel(IMvxNavigationService navigationService, IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.navigationService = navigationService;
 
-            CloseCommand = new MvxAsyncCommand(close);
-            SelectFormatCommand = new MvxAsyncCommand<SelectableDateFormatViewModel>(selectFormat);
+            Close = rxActionFactory.FromAsync(close);
+            SelectDateFormat = rxActionFactory.FromAsync<SelectableDateFormatViewModel>(selectFormat);
 
             DateTimeFormats = availableDateFormats
                 .Select(dateFormat => new SelectableDateFormatViewModel(dateFormat, false))
-                .ToArray();
+                .ToImmutableList();
         }
 
         public override void Prepare(DateFormat parameter)

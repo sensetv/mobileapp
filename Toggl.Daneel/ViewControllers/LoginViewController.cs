@@ -41,6 +41,14 @@ namespace Toggl.Daneel.ViewControllers
         {
             base.ViewDidLoad();
 
+            EmailTextField.Placeholder = Resources.EmailAddress;
+            PasswordTextField.Placeholder = Resources.Password;
+            OrLabel.Text = Resources.Or.ToUpper();
+            LoginButton.SetTitle(Resources.LoginTitle, UIControlState.Normal);
+            GoogleLoginButton.SetTitle(Resources.GoogleLogin, UIControlState.Normal);
+            DontHaveAnAccountLabel.Text = Resources.DoNotHaveAnAccountWithQuestionMark;
+            SignUpForFreeLabel.Text = Resources.SignUpTitle;
+
             NavigationController.NavigationBarHidden = true;
             PasswordManagerButton.Hidden = !ViewModel.IsPasswordManagerAvailable;
 
@@ -150,8 +158,8 @@ namespace Toggl.Daneel.ViewControllers
                 => hasError ? UIColor.White : UIColor.Black;
 
             UIColor loginButtonTitleColor(bool enabled) => enabled
-                ? Color.Login.EnabledButtonColor.ToNativeColor()
-                : Color.Login.DisabledButtonColor.ToNativeColor();
+                ? Foundation.MvvmCross.Helper.Color.Login.EnabledButtonColor.ToNativeColor()
+                : Foundation.MvvmCross.Helper.Color.Login.DisabledButtonColor.ToNativeColor();
         }
 
         public override void ViewWillAppear(bool animated)
@@ -218,7 +226,7 @@ namespace Toggl.Daneel.ViewControllers
             NavigationController.NavigationBarHidden = true;
 
             LoginButton.SetTitleColor(
-                Color.Login.DisabledButtonColor.ToNativeColor(),
+                Foundation.MvvmCross.Helper.Color.Login.DisabledButtonColor.ToNativeColor(),
                 UIControlState.Disabled
             );
 
@@ -248,7 +256,7 @@ namespace Toggl.Daneel.ViewControllers
         private void prepareForgotPasswordButton()
         {
             var boldFont = UIFont.SystemFontOfSize(12, UIFontWeight.Medium);
-            var color = Color.Login.ForgotPassword.ToNativeColor();
+            var color = Foundation.MvvmCross.Helper.Color.Login.ForgotPassword.ToNativeColor();
             var text = new NSMutableAttributedString(
                 Resources.LoginForgotPassword, foregroundColor: color);
             var boldText = new NSAttributedString(

@@ -37,6 +37,9 @@ namespace Toggl.Daneel.ViewControllers
             base.ViewDidLoad();
 
             Title = Resources.LoginForgotPassword;
+            ResetPasswordButton.SetTitle(Resources.GetPasswordResetLink, UIControlState.Normal);
+            EmailTextField.Placeholder = Resources.EmailAddress;
+            SuccessMessageLabel.Text = Resources.PasswordResetSuccess;
 
             prepareViews();
 
@@ -128,7 +131,7 @@ namespace Toggl.Daneel.ViewControllers
             NavigationController.NavigationBarHidden = false;
 
             ResetPasswordButton.SetTitleColor(
-                Color.Login.DisabledButtonColor.ToNativeColor(),
+                Foundation.MvvmCross.Helper.Color.Login.DisabledButtonColor.ToNativeColor(),
                 UIControlState.Disabled
             );
 
@@ -148,7 +151,7 @@ namespace Toggl.Daneel.ViewControllers
             var image = UIImage
                 .FromBundle("icBackNoPadding")
                 .ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
-            var color = Color.NavigationBar.BackButton.ToNativeColor();
+            var color = Foundation.MvvmCross.Helper.Color.NavigationBar.BackButton.ToNativeColor();
             var backButton = new UIButton();
             backButton.TintColor = color;
             backButton.SetImage(image, UIControlState.Normal);

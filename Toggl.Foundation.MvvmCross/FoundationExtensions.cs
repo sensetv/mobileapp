@@ -90,11 +90,9 @@ namespace Toggl.Foundation.MvvmCross
             Mvx.RegisterSingleton(foundation.Scheduler);
             Mvx.RegisterSingleton(foundation.ApiFactory);
             Mvx.RegisterSingleton(foundation.TimeService);
-            Mvx.RegisterSingleton(foundation.MailService);
             Mvx.RegisterSingleton(foundation.RatingService);
             Mvx.RegisterSingleton(foundation.ShortcutCreator);
             Mvx.RegisterSingleton(foundation.LicenseProvider);
-            Mvx.RegisterSingleton(foundation.FeedbackService);
             Mvx.RegisterSingleton(foundation.ShortcutCreator);
             Mvx.RegisterSingleton(foundation.AnalyticsService);
             Mvx.RegisterSingleton(foundation.PlatformInfo);
@@ -116,12 +114,6 @@ namespace Toggl.Foundation.MvvmCross
             Mvx.RegisterSingleton(foundation.PrivateSharedStorageService);
             Mvx.RegisterSingleton(foundation.PasswordManagerService ?? new StubPasswordManagerService());
             Mvx.RegisterSingleton(foundation.RxActionFactory);
-
-            // Feedback service is obsolete and is used only in the Android App and should be removed soon
-            if (foundation.FeedbackService != null)
-            {
-                Mvx.RegisterSingleton(foundation.FeedbackService);
-            }
         }
     }
 }

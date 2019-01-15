@@ -81,12 +81,10 @@ namespace Toggl.Giskard
 
             var appVersion = Version.Parse(version);
             var userAgent = new UserAgent(clientName, version);
-            var mailService = new MailServiceAndroid(ApplicationContext);
             var dialogService = new DialogServiceAndroid();
             var platformInfo = new PlatformInfoAndroid();
             var keyValueStorage = new SharedPreferencesStorageAndroid(sharedPreferences);
             var settingsStorage = new SettingsStorage(appVersion, keyValueStorage);
-            var feedbackService = new FeedbackService(userAgent, mailService, dialogService, platformInfo);
             var schedulerProvider = new AndroidSchedulerProvider();
             var permissionsService = new PermissionsServiceAndroid();
             var calendarService = new CalendarServiceAndroid(permissionsService);
@@ -102,7 +100,6 @@ namespace Toggl.Giskard
                     .WithDatabase(database)
                     .WithScheduler(scheduler)
                     .WithTimeService(timeService)
-                    .WithMailService(mailService)
                     .WithApiEnvironment(environment)
                     .WithGoogleService<GoogleServiceAndroid>()
                     .WithRatingService(new RatingServiceAndroid(ApplicationContext))
@@ -123,7 +120,6 @@ namespace Toggl.Giskard
                     .WithBackgroundSyncService<BackgroundSyncServiceAndroid>()
                     .StartRegisteringPlatformServices()
                     .WithDialogService(dialogService)
-                    .WithFeedbackService(feedbackService)
                     .WithLastTimeUsageStorage(settingsStorage)
                     .WithBrowserService<BrowserServiceAndroid>()
                     .WithCalendarService(calendarService)

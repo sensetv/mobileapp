@@ -40,7 +40,7 @@ namespace Toggl.Giskard.Activities
                 var fragment = SupportFragmentManager.Fragments.FirstOrDefault();
                 if (fragment is SelectWorkspaceFragment selectWorkspaceFragment)
                 {
-                    selectWorkspaceFragment.ViewModel.CloseCommand.Execute();
+                    selectWorkspaceFragment.ViewModel.Close.Execute();
                     return true;
                 }
 

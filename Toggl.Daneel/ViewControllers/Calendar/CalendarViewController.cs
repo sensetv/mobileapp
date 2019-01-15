@@ -18,7 +18,11 @@ namespace Toggl.Daneel.ViewControllers
     [TabPresentation]
     public sealed partial class CalendarViewController : ReactiveViewController<CalendarViewModel>
     {
+        private const double minimumOffsetOfCurrentTimeIndicatorFromScreenEdge = 0.2;
+        private const double middleOfTheDay = 12;
+
         private readonly UIImageView titleImage = new UIImageView(UIImage.FromBundle("togglLogo"));
+        private readonly ITimeService timeService;
 
         private CalendarCollectionViewLayout layout;
         private CalendarCollectionViewSource dataSource;
@@ -30,11 +34,16 @@ namespace Toggl.Daneel.ViewControllers
         public CalendarViewController()
             : base(nameof(CalendarViewController))
         {
+            timeService = Mvx.Resolve<ITimeService>();
         }
 
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
+            TitleLabel.Text = Resources.Welcome;
+            DescriptionLabel.Text = Resources.CalendarFeatureDescription;
+            GetStartedButton.SetTitle(Resources.GetStarted, UIControlState.Normal);
 
             settingsButton.SetImage(UIImage.FromBundle("icSettings"), UIControlState.Normal);
 
@@ -52,8 +61,6 @@ namespace Toggl.Daneel.ViewControllers
             GetStartedButton.Rx()
                 .BindAction(ViewModel.GetStarted)
                 .DisposedBy(DisposeBag);
-
-            var timeService = Mvx.Resolve<ITimeService>();
 
             dataSource = new CalendarCollectionViewSource(
                 timeService,
@@ -83,6 +90,10 @@ namespace Toggl.Daneel.ViewControllers
                 .Subscribe(ViewModel.OnUpdateTimeEntry.Inputs)
                 .DisposedBy(DisposeBag);
 
+            editItemHelper.LongPressCalendarEvent
+                .Subscribe(ViewModel.OnCalendarEventLongPressed.Inputs)
+                .DisposedBy(DisposeBag);
+
             ViewModel.SettingsAreVisible
                 .Subscribe(settingsButton.Rx().IsVisible())
                 .DisposedBy(DisposeBag);
@@ -92,10 +103,6 @@ namespace Toggl.Daneel.ViewControllers
                 .DisposedBy(DisposeBag);
 
             CalendarCollectionView.LayoutIfNeeded();
-            var currentTimeY = layout.FrameForCurrentTime().Y;
-            var scrollPointY = currentTimeY - View.Frame.Height / 2;
-            var currentTimePoint = new CGPoint(0, scrollPointY.Clamp(0, CalendarCollectionView.ContentSize.Height));
-            CalendarCollectionView.SetContentOffset(currentTimePoint, false);
         }
 
         public override void ViewWillAppear(bool animated)
@@ -109,6 +116,53 @@ namespace Toggl.Daneel.ViewControllers
             };
 
             layout.InvalidateCurrentTimeLayout();
+        }
+
+        public override void ViewDidAppear(bool animated)
+        {
+            base.ViewDidAppear(animated);
+
+            if (CalendarCollectionView.ContentSize.Height == 0)
+                return;
+
+            selectGoodScrollPoint(timeService.CurrentDateTime.LocalDateTime.TimeOfDay);
+        }
+
+        private void selectGoodScrollPoint(TimeSpan timeOfDay)
+        {
+            var frameHeight =
+                CalendarCollectionView.Frame.Height
+                    - CalendarCollectionView.ContentInset.Top
+                    - CalendarCollectionView.ContentInset.Bottom;
+            var hoursOnScreen = frameHeight / (CalendarCollectionView.ContentSize.Height / 24);
+            var centeredHour = calculateCenteredHour(timeOfDay.TotalHours, hoursOnScreen);
+
+            var offsetY = (centeredHour / 24) * CalendarCollectionView.ContentSize.Height - (frameHeight / 2);
+            var scrollPointY = offsetY.Clamp(0, CalendarCollectionView.ContentSize.Height - frameHeight);
+            var offset = new CGPoint(0, scrollPointY);
+            CalendarCollectionView.SetContentOffset(offset, false);
+        }
+
+        private static double calculateCenteredHour(double currentHour, double hoursOnScreen)
+        {
+            var hoursPerHalfOfScreen = hoursOnScreen / 2;
+            var minimumOffset = hoursOnScreen * minimumOffsetOfCurrentTimeIndicatorFromScreenEdge;
+
+            var center = (currentHour + middleOfTheDay) / 2;
+
+            if (currentHour < center - hoursPerHalfOfScreen + minimumOffset)
+            {
+                // the current time indicator would be too close to the top edge of the screen
+                return currentHour - minimumOffset + hoursPerHalfOfScreen;
+            }
+
+            if (currentHour > center + hoursPerHalfOfScreen - minimumOffset)
+            {
+                // the current time indicator would be too close to the bottom edge of the screen
+                return currentHour + minimumOffset - hoursPerHalfOfScreen;
+            }
+
+            return center;
         }
     }
 }

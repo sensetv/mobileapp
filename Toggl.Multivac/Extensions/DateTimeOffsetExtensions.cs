@@ -29,6 +29,21 @@ namespace Toggl.Multivac.Extensions
             => new DateTimeOffset(original.Year, original.Month, original.Day,
                                   time.Hour, time.Minute, time.Second, original.Offset);
 
+        public static DateTimeOffset RoundToClosestQuarter(this DateTimeOffset time)
+        {
+            var roundDown = RoundDownToClosestQuarter(time);
+            var roundUp = RoundUpToClosestQuarter(time);
+
+            if (SystemMath.Abs((roundDown.RoundDownToClosestQuarter() - time).TotalSeconds) > SystemMath.Abs((roundUp.RoundDownToClosestQuarter() - time).TotalSeconds))
+            {
+                return roundUp;
+            }
+            else
+            {
+                return roundDown;
+            }
+        }
+
         public static DateTimeOffset RoundDownToClosestQuarter(this DateTimeOffset time)
         {
             var offset = time.Minute % 15;

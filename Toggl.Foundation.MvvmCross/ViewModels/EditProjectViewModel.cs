@@ -200,10 +200,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private async Task pickWorkspace()
         {
-            var parameters = WorkspaceParameters.Create(workspaceId, Resources.Workspaces, allowQuerying: false);
             var selectedWorkspaceId =
                 await navigationService
-                    .Navigate<SelectWorkspaceViewModel, WorkspaceParameters, long>(parameters);
+                    .Navigate<SelectWorkspaceViewModel, long, long>(workspaceId);
 
             if (selectedWorkspaceId == workspaceId) return;
 
@@ -236,7 +235,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 return;
             }
 
-            var client = await dataSource.Clients.GetById(selectedClientId.Value);
+            var client = await interactorFactory.GetClientById(selectedClientId.Value).Execute();
             clientId = client.Id;
             ClientName = client.Name;
         }

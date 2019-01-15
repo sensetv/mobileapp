@@ -294,6 +294,7 @@
     </Compile>
     <Compile Include="Adapters\ReportsCalendarShortcutAdapter.cs" />
     <Compile Include="Adapters\SelectCreatableEntityRecyclerAdapter.cs" />
+    <Compile Include="Adapters\SelectDurationFormatRecyclerAdapter.cs" />
     <Compile Include="Adapters\SelectTagsRecyclerAdapter.cs" />
     <Compile Include="Activities\SelectProjectActivity.cs" />
     <Compile Include="Adapters\SelectProjectRecyclerAdapter.cs" />
@@ -307,6 +308,9 @@
     <Compile Include="Extensions\TracingExtensions.cs" />
     <Compile Include="Extensions\Reactive\RecyclerViewExtensions.cs" />
     <Compile Include="Extensions\Reactive\ValueSliderViewExtensions.cs" />
+    <Compile Include="Fragments\SelectWorkspaceFragment.ViewBinds.cs">
+      <DependentUpon>SelectWorkspaceFragment.cs</DependentUpon>
+    </Compile>
     <Compile Include="Helper\PersistentNotificationsHelper.cs" />
     <Compile Include="Fragments\NoWorkspaceFragment.cs" />
     <Compile Include="Fragments\NoWorkspaceFragment.ViewBinds.cs">
@@ -352,6 +356,8 @@
     <Compile Include="ViewHolders\MainLogSuggestionItemViewHolder.cs" />
     <Compile Include="ViewHolders\MainLogSuggestionsListViewHolder.cs" />
     <Compile Include="ViewHolders\GuardedMvxRecyclerViewHolder.cs" />
+    <Compile Include="ViewHolders\SelectDurationFormatViewHolder.cs" />
+    <Compile Include="ViewHolders\SelectWorkspaceViewHolder.cs" />
     <Compile Include="ViewHolders\ReportsCalendarShortcutCellViewHolder.cs" />
     <Compile Include="ViewHolders\ReportsHeaderCellViewHolder.cs" />
     <Compile Include="ViewHolders\ReportsItemCellViewHolder.cs" />
@@ -377,7 +383,6 @@
     <Compile Include="Activities\StartTimeEntryActivity.cs" />
     <Compile Include="Extensions\VisibilityExtensions.cs" />
     <Compile Include="Activities\BrowserActivity.cs" />
-    <Compile Include="Services\MailServiceAndroid.cs" />
     <Compile Include="Extensions\CircularRevealAnimation.cs" />
     <Compile Include="Activities\EditTimeEntryActivity.cs" />
     <Compile Include="ApplicationShortcutCreator.cs" />
@@ -406,16 +411,19 @@
     <Compile Include="Activities\SelectClientActivity.cs" />
     <Compile Include="Adapters\SelectClientRecyclerAdapter.cs" />
     <Compile Include="Fragments\SelectWorkspaceFragment.cs" />
-    <Compile Include="TemplateSelectors\SelectWorkspaceTemplateSelector.cs" />
     <Compile Include="Bindings\TextViewFontWeightTargetBinding.cs" />
     <Compile Include="Services\LicenseProviderAndroid.cs" />
     <Compile Include="Views\SelectProjectWithExpandableTasksRecyclerViewHolder.cs" />
     <Compile Include="Fragments\SelectDateFormatFragment.cs" />
-    <Compile Include="TemplateSelectors\SelectDateFormatTemplateSelector.cs" />
+    <Compile Include="Fragments\SelectDateFormatFragment.ViewBinds.cs">
+      <DependentUpon>SelectDateFormatFragment.cs</DependentUpon>
+    </Compile>
     <Compile Include="Fragments\SelectBeginningOfWeekFragment.cs" />
     <Compile Include="TemplateSelectors\SelectBeginningOfWeekTemplateSelector.cs" />
     <Compile Include="Fragments\SelectDurationFormatFragment.cs" />
-    <Compile Include="TemplateSelectors\SelectDurationFormatTemplateSelector.cs" />
+    <Compile Include="Fragments\SelectDurationFormatFragment.ViewBinds.cs">
+      <DependentUpon>SelectDurationFormatFragment.cs</DependentUpon>
+    </Compile>
     <Compile Include="Converters\TransparentColorValueConverter.cs" />
     <Compile Include="Adapters\ReportsRecyclerAdapter.cs" />
     <Compile Include="Extensions\ViewExtensions.cs" />
@@ -525,6 +533,9 @@
     <Compile Include="Startup\ApplicationLifecycleObserver.cs" />
     <Compile Include="Services\BackgroundSyncServiceAndroid.cs" />
     <Compile Include="Services\BackgroundSyncJobSchedulerService.cs" />
+    <Compile Include="Adapters\SelectDateFormatRecyclerAdapter.cs" />
+    <Compile Include="ViewHolders\SelectDateFormatViewHolder.cs" />
+    <Compile Include="Extensions\ColorExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AndroidManifest.xml" />

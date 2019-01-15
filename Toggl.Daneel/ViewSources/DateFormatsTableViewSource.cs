@@ -1,33 +1,29 @@
 ﻿using System;
+using System.Collections.Immutable;
+using System.Reactive.Linq;
 using Foundation;
-using MvvmCross.Platforms.Ios.Binding.Views;
 using Toggl.Daneel.Views.Settings;
+using Toggl.Foundation.MvvmCross.ViewModels.Selectable;
 using UIKit;
 
 namespace Toggl.Daneel.ViewSources
 {
-    public sealed class DateFormatsTableViewSource : MvxTableViewSource
+    public sealed class DateFormatsTableViewSource : ListTableViewSource<SelectableDateFormatViewModel, DateFormatViewCell>
     {
         private const string cellIdentifier = nameof(DateFormatViewCell);
+        private const int rowHeight = 48;
 
-        public DateFormatsTableViewSource(UITableView tableView)
-            : base(tableView)
+        public IObservable<SelectableDateFormatViewModel> DateFormatSelected
+            => Observable
+                .FromEventPattern<SelectableDateFormatViewModel>(e => OnItemTapped += e, e => OnItemTapped -= e)
+                .Select(e => e.EventArgs);
+
+        public DateFormatsTableViewSource(UITableView tableView, IImmutableList<SelectableDateFormatViewModel> items)
+            : base(items, cellIdentifier)
         {
             tableView.RegisterNibForCellReuse(DateFormatViewCell.Nib, cellIdentifier);
         }
 
-        protected override UITableViewCell GetOrCreateCellFor(UITableView tableView, NSIndexPath indexPath, object item)
-            => tableView.DequeueReusableCell(cellIdentifier, indexPath);
-
-        public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
-        {
-            var item = GetItemAt(indexPath);
-            var cell = GetOrCreateCellFor(tableView, indexPath, item);
-            if (cell is IMvxBindable bindable)
-                bindable.DataContext = item;
-            return cell;
-        }
-
-        public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath) => 48;
+        public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath) => rowHeight;
     }
 }

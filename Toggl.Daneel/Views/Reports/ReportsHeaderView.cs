@@ -2,14 +2,10 @@
 using CoreGraphics;
 using Foundation;
 using MvvmCross.Binding.BindingContext;
-using MvvmCross.Platforms.Ios.Binding;
 using MvvmCross.Platforms.Ios.Binding.Views;
 using MvvmCross.Plugin.Color.Platforms.Ios;
 using Toggl.Daneel.Converters;
 using Toggl.Daneel.Extensions;
-using Toggl.Foundation.MvvmCross.Combiners;
-using Toggl.Foundation.MvvmCross.Converters;
-using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels.Reports;
 using UIKit;
 using System.Reactive.Disposables;
@@ -19,9 +15,11 @@ using Toggl.Multivac.Extensions;
 using System.Linq;
 using Toggl.Multivac;
 using System.Collections.Generic;
+using System.Globalization;
 using Toggl.Foundation.Conversions;
 using System.Reactive.Subjects;
 using System.Reactive;
+using Toggl.Foundation;
 using Toggl.Foundation.Extensions;
 
 namespace Toggl.Daneel.Views.Reports
@@ -51,6 +49,12 @@ namespace Toggl.Daneel.Views.Reports
         public override void AwakeFromNib()
         {
             base.AwakeFromNib();
+
+            TotalTitleLabel.Text = Resources.Total.ToUpper();
+            BillableTitleLabel.Text = Resources.Billable.ToUpper();
+            ClockedHoursTitleLabel.Text = Resources.ClockedHours.ToUpper();
+            BillableLegendLabel.Text = Resources.Billable.ToUpper();
+            NonBillableLegendLabel.Text = Resources.NonBillable.ToUpper();
 
             var templateImage = TotalDurationGraph.Image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
             TotalDurationGraph.Image = templateImage;
@@ -92,8 +96,8 @@ namespace Toggl.Daneel.Views.Reports
 
                 var totalDurationColorObservable = ViewModel.TotalTimeIsZeroObservable
                     .Select(isZero => isZero
-                        ? Color.Reports.Disabled.ToNativeColor()
-                        : Color.Reports.TotalTimeActivated.ToNativeColor());
+                        ? Foundation.MvvmCross.Helper.Color.Reports.Disabled.ToNativeColor()
+                        : Foundation.MvvmCross.Helper.Color.Reports.TotalTimeActivated.ToNativeColor());
 
                 totalDurationColorObservable
                     .Subscribe(TotalDurationGraph.Rx().TintColor())
@@ -116,14 +120,14 @@ namespace Toggl.Daneel.Views.Reports
                 ViewModel.StartDate
                     .CombineLatest(
                         ViewModel.BarChartViewModel.DateFormat,
-                        (startDate, format) => startDate.ToString(format.Short))
+                        (startDate, format) => startDate.ToString(format.Short, CultureInfo.InvariantCulture))
                     .Subscribe(StartDateLabel.Rx().Text())
                     .DisposedBy(disposeBag);
 
                 ViewModel.EndDate
                     .CombineLatest(
                         ViewModel.BarChartViewModel.DateFormat,
-                        (endDate, format) => endDate.ToString(format.Short))
+                        (endDate, format) => endDate.ToString(format.Short, CultureInfo.InvariantCulture))
                     .Subscribe(EndDateLabel.Rx().Text())
                     .DisposedBy(disposeBag);
 
@@ -229,6 +233,9 @@ namespace Toggl.Daneel.Views.Reports
             });
 
         private IEnumerable<UILabel> createHorizontalLegendLabels(IEnumerable<DateTimeOffset> dates, DateFormat format)
-            => dates.Select(date => new BarLegendLabel(DateTimeOffsetConversion.ToDayOfWeekInitial(date), date.ToString(format.Short)));
+            => dates.Select(date =>
+                new BarLegendLabel(
+                    DateTimeOffsetConversion.ToDayOfWeekInitial(date),
+                    date.ToString(format.Short, CultureInfo.InvariantCulture)));
     }
 }

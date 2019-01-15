@@ -305,6 +305,7 @@ Toggl.Giskard*/Resources/Resource.designer.cs
 
 # macOS Rider creates this .dll folders
 Toggl.Giskard/\*Undefined\*Tools
+Toggl.Daneel/\*Undefined\*Tools
 Toggl.PrimeRadiant.Realm/\*Undefined\*Tools
 
 # Xcode

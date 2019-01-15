@@ -1,56 +1,49 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using MvvmCross.Commands;
 using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
 using Toggl.Foundation.Interactors;
-using Toggl.Foundation.MvvmCross.Parameters;
+using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
     [Preserve(AllMembers = true)]
-    public sealed class SelectWorkspaceViewModel : MvxViewModel<WorkspaceParameters, long>
+    public sealed class SelectWorkspaceViewModel : MvxViewModel<long, long>
     {
         private readonly IInteractorFactory interactorFactory;
         private readonly IMvxNavigationService navigationService;
 
-        private long defaultWorkspaceId;
-        private IEnumerable<SelectableWorkspaceViewModel> allWorkspaces;
+        private long currentWorkspaceId;
 
-        public string Title { get; private set; } = "";
+        public string Title { get; } = Resources.SetDefaultWorkspace;
+        public ReadOnlyCollection<SelectableWorkspaceViewModel> Workspaces { get; private set; }
 
-        public bool AllowQuerying { get; private set; }
+        public UIAction Close { get; }
+        public InputAction<SelectableWorkspaceViewModel> SelectWorkspace { get; }
 
-        public string Text { get; set; } = "";
-
-        public IMvxAsyncCommand CloseCommand { get; }
-
-        public IMvxAsyncCommand<SelectableWorkspaceViewModel> SelectWorkspaceCommand { get; }
-
-        public MvxObservableCollection<SelectableWorkspaceViewModel> Suggestions { get; }
-            = new MvxObservableCollection<SelectableWorkspaceViewModel>();
-
-        public SelectWorkspaceViewModel(IInteractorFactory interactorFactory, IMvxNavigationService navigationService)
+        public SelectWorkspaceViewModel(
+            IInteractorFactory interactorFactory,
+            IMvxNavigationService navigationService,
+            IRxActionFactory rxActionFactory)
         {
             Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
+            Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             this.interactorFactory = interactorFactory;
             this.navigationService = navigationService;
 
-            CloseCommand = new MvxAsyncCommand(close);
-            SelectWorkspaceCommand = new MvxAsyncCommand<SelectableWorkspaceViewModel>(selectWorkspace);
+            Close = rxActionFactory.FromAsync(close);
+            SelectWorkspace = rxActionFactory.FromAsync<SelectableWorkspaceViewModel>(selectWorkspace);
         }
 
-        public override void Prepare(WorkspaceParameters parameter)
+        public override void Prepare(long currentWorkspaceId)
         {
-            Title = parameter.Title;
-            AllowQuerying = parameter.AllowQuerying;
-            defaultWorkspaceId = parameter.CurrentWorkspaceId;
+            this.currentWorkspaceId = currentWorkspaceId;
         }
 
         public override async Task Initialize()
@@ -59,21 +52,15 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             var workspaces = await interactorFactory.GetAllWorkspaces().Execute();
 
-            allWorkspaces = workspaces.Where(w => w.IsEligibleForProjectCreation())
-                .Select(w => new SelectableWorkspaceViewModel(w, w.Id == defaultWorkspaceId));
-            Suggestions.AddRange(allWorkspaces);
-        }
-
-        private void OnTextChanged()
-        {
-            Suggestions.Clear();
-            Suggestions.AddRange(
-                allWorkspaces.Where(w => w.WorkspaceName.ContainsIgnoringCase(Text))
-            );
+            Workspaces = workspaces
+                .Where(w => w.IsEligibleForProjectCreation())
+                .Select(w => new SelectableWorkspaceViewModel(w, w.Id == currentWorkspaceId))
+                .ToList()
+                .AsReadOnly();
         }
 
         private Task close()
-            => navigationService.Close(this, defaultWorkspaceId);
+            => navigationService.Close(this, currentWorkspaceId);
 
         private Task selectWorkspace(SelectableWorkspaceViewModel workspace)
             => navigationService.Close(this, workspace.WorkspaceId);

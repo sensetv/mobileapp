@@ -1,37 +1,33 @@
-﻿using System;
+using System;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using CoreGraphics;
+using Foundation;
 using MvvmCross.Binding.BindingContext;
-using MvvmCross.Platforms.Ios.Binding;
+using MvvmCross.Platforms.Ios;
 using MvvmCross.Plugin.Color.Platforms.Ios;
-using Toggl.Daneel.Converters;
 using Toggl.Daneel.Extensions;
 using Toggl.Daneel.Extensions.Reactive;
 using Toggl.Daneel.Presentation.Attributes;
+using Toggl.Daneel.Views.EditDuration;
 using Toggl.Foundation.Analytics;
-using Toggl.Foundation.MvvmCross.Combiners;
-using Toggl.Foundation.MvvmCross.Converters;
-using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Multivac.Extensions;
 using UIKit;
 using static Toggl.Daneel.Extensions.FontExtensions;
 using System.Runtime.Remoting.Messaging;
+using Toggl.Foundation;
 
 namespace Toggl.Daneel.ViewControllers
 {
     [ModalCardPresentation]
     public sealed partial class EditDurationViewController : KeyboardAwareViewController<EditDurationViewModel>, IDismissableViewController
     {
-        private const int offsetFromSafeAreaTop = 20;
         private const int additionalVerticalContentSize = 100;
         private const int stackViewSpacing = 26;
-
-        private IDisposable startTimeChangingSubscription;
 
         private CompositeDisposable disposeBag = new CompositeDisposable();
         private CGRect frameBeforeShowingKeyboard;
@@ -44,165 +40,188 @@ namespace Toggl.Daneel.ViewControllers
         {
             base.ViewDidLoad();
 
-            startTimeChangingSubscription = ViewModel.StartTimeChanging.Subscribe(startTimeChanging);
+            StartLabel.Text = Resources.Start;
+            EndLabel.Text = Resources.End;
+            TitleLabel.Text = Resources.StartAndStopTime;
+            SetEndButton.SetTitle(Resources.Stop, UIControlState.Normal);
+            SaveButton.SetTitle(Resources.Save, UIControlState.Normal);
 
             prepareViews();
 
-            var durationCombiner = new DurationValueCombiner();
-            var timeCombiner = new DateTimeOffsetTimeFormatValueCombiner(TimeZoneInfo.Local);
-            var dateCombiner = new DateTimeOffsetDateFormatValueCombiner(TimeZoneInfo.Local, useLongFormat: false);
-            var timeFormatToLocaleConverter = new TimeFormatToLocaleValueConverter();
-            var inverseBoolConverter = new BoolToConstantValueConverter<bool>(false, true);
-            var editedTimeLabelColorConverter = new BoolToConstantValueConverter<UIColor>(
-                Color.EditDuration.EditedTime.ToNativeColor(),
-                Color.EditDuration.NotEditedTime.ToNativeColor());
+            // Actions
+            SaveButton.Rx()
+                .BindAction(ViewModel.Save)
+                .DisposedBy(disposeBag);
 
-            var bindingSet = this.CreateBindingSet<EditDurationViewController, EditDurationViewModel>();
+            CloseButton.Rx()
+                .BindAction(ViewModel.Close)
+                .DisposedBy(disposeBag);
 
-            //Commands
-            bindingSet.Bind(SaveButton).To(vm => vm.SaveCommand);
-            bindingSet.Bind(CloseButton).To(vm => vm.CloseCommand);
+            // Start and stop date/time
+            ViewModel.StartTimeString
+                .Subscribe(StartTimeLabel.Rx().Text())
+                .DisposedBy(disposeBag);
 
-            //Start and stop date/time
-            bindingSet.Bind(StartTimeLabel)
-                      .ByCombining(timeCombiner,
-                          vm => vm.StartTime,
-                          vm => vm.TimeFormat);
+            ViewModel.StartDateString
+                .Subscribe(StartDateLabel.Rx().Text())
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(StartDateLabel)
-                      .ByCombining(dateCombiner,
-                          vm => vm.StartTime,
-                          vm => vm.DateFormat);
+            ViewModel.StopTimeString
+                .Subscribe(EndTimeLabel.Rx().Text())
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(EndTimeLabel)
-                      .ByCombining(timeCombiner,
-                          vm => vm.StopTime,
-                          vm => vm.TimeFormat);
+            ViewModel.StopDateString
+                .Subscribe(EndDateLabel.Rx().Text())
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(EndDateLabel)
-                      .ByCombining(dateCombiner,
-                          vm => vm.StopTime,
-                          vm => vm.DateFormat);
+            // Editing start and end time
+            StartView.Rx()
+                .BindAction(ViewModel.EditStartTime)
+                .DisposedBy(disposeBag);
 
-            //Editing start and end time
-            bindingSet.Bind(StartView)
-                      .For(v => v.BindTap())
-                      .To(vm => vm.EditStartTimeCommand);
+            EndView.Rx()
+                .BindAction(ViewModel.EditStopTime)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(EndView)
-                      .For(v => v.BindTap())
-                      .To(vm => vm.EditStopTimeCommand);
+            SetEndButton.Rx()
+                .BindAction(ViewModel.EditStopTime)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(SetEndButton)
-                      .For(v => v.BindVisibility())
-                      .To(vm => vm.IsRunning)
-                      .WithConversion(inverseBoolConverter);
+            // Visibility
+            ViewModel.IsRunning
+                .Subscribe(running =>
+                {
+                    SetEndButton.Hidden = !running;
+                    EndTimeLabel.Hidden = running;
+                    EndDateLabel.Hidden = running;
+                })
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(SetEndButton)
-                      .To(vm => vm.EditStopTimeCommand);
+            // Stard and end colors
+            ViewModel.IsEditingStartTime
+                .Select(editingStartTime => editingStartTime
+                    ? Color.EditDuration.EditedTime.ToNativeColor()
+                    : Color.EditDuration.NotEditedTime.ToNativeColor()
+                )
+                .Subscribe(color =>
+                {
+                    StartTimeLabel.TextColor = color;
+                    StartDateLabel.TextColor = color;
+                })
+                .DisposedBy(disposeBag);
 
-            //Visibility
-            bindingSet.Bind(EndTimeLabel)
-                      .For(v => v.BindVisibility())
-                      .To(vm => vm.IsRunning);
+            ViewModel.IsEditingStopTime
+                .Select(editingStartTime => editingStartTime
+                    ? Color.EditDuration.EditedTime.ToNativeColor()
+                    : Color.EditDuration.NotEditedTime.ToNativeColor()
+                )
+                .Subscribe(color =>
+                {
+                    EndTimeLabel.TextColor = color;
+                    EndDateLabel.TextColor = color;
+                })
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(EndDateLabel)
-                      .For(v => v.BindVisibility())
-                      .To(vm => vm.IsRunning);
+            // Date picker
+            ViewModel.IsEditingTime
+                .Subscribe(DatePickerContainer.Rx().AnimatedIsVisible())
+                .DisposedBy(disposeBag);
 
-            //Stard and end colors
-            bindingSet.Bind(StartTimeLabel)
-                      .For(v => v.TextColor)
-                      .To(vm => vm.IsEditingStartTime)
-                      .WithConversion(editedTimeLabelColorConverter);
+            DatePicker.Rx().Date()
+                .Subscribe(ViewModel.ChangeActiveTime.Inputs)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(StartDateLabel)
-                      .For(v => v.TextColor)
-                      .To(vm => vm.IsEditingStartTime)
-                      .WithConversion(editedTimeLabelColorConverter);
+            var startTime = ViewModel.IsEditingStartTime
+                    .Where(CommonFunctions.Identity)
+                    .SelectMany(_ => ViewModel.StartTime);
 
-            bindingSet.Bind(EndTimeLabel)
-                      .For(v => v.TextColor)
-                      .To(vm => vm.IsEditingStopTime)
-                      .WithConversion(editedTimeLabelColorConverter);
+            var stopTime = ViewModel.IsEditingStopTime
+                    .Where(CommonFunctions.Identity)
+                    .SelectMany(_ => ViewModel.StopTime);
 
-            bindingSet.Bind(EndDateLabel)
-                      .For(v => v.TextColor)
-                      .To(vm => vm.IsEditingStopTime)
-                      .WithConversion(editedTimeLabelColorConverter);
+            Observable.Merge(startTime, stopTime)
+                .Subscribe(v => DatePicker.SetDate(v.ToNSDate(), false))
+                .DisposedBy(disposeBag);
 
-            //Date picker
-            bindingSet.Bind(DatePickerContainer)
-                      .For(v => v.BindAnimatedVisibility())
-                      .To(vm => vm.IsEditingTime);
+            ViewModel.IsEditingStartTime
+                .Where(CommonFunctions.Identity)
+                .SelectMany(_ => ViewModel.StartTime)
+                .Subscribe(v => DatePicker.SetDate(v.ToNSDate(), false))
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(DatePicker)
-                      .For(v => v.BindDateTimeOffset())
-                      .To(vm => vm.EditedTime);
+            ViewModel.MinimumDateTime
+                .Subscribe(v => DatePicker.MinimumDate = v.ToNSDate())
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(DatePicker)
-                      .For(v => v.MaximumDate)
-                      .To(vm => vm.MaximumDateTime);
+            ViewModel.MaximumDateTime
+                .Subscribe(v => DatePicker.MaximumDate = v.ToNSDate())
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(DatePicker)
-                      .For(v => v.MinimumDate)
-                      .To(vm => vm.MinimumDateTime);
+            ViewModel.TimeFormat
+                .Subscribe(v => DatePicker.Locale = v.IsTwentyFourHoursFormat ? new NSLocale("en_GB") : new NSLocale("en_US"))
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(DatePicker)
-                      .For(v => v.Locale)
-                      .To(vm => vm.TimeFormat)
-                      .WithConversion(timeFormatToLocaleConverter);
+            // DurationInput
 
-            //The wheel
-            bindingSet.Bind(DurationInput)
-                      .For(v => v.UserInteractionEnabled)
-                      .To(vm => vm.IsEditingTime)
-                      .WithConversion(inverseBoolConverter);
+            ViewModel.IsEditingTime
+                .Invert()
+                .Subscribe(DurationInput.Rx().Enabled())
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(DurationInput)
-                      .For(v => v.Duration)
-                      .To(vm => vm.Duration);
+            ViewModel.Duration
+                .Subscribe(v => DurationInput.Duration = v)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(DurationInput)
-                      .For(v => v.FormattedDuration)
-                      .ByCombining(durationCombiner,
-                          vm => vm.Duration,
-                          vm => vm.DurationFormat);
+            ViewModel.DurationString
+                .Subscribe(v => DurationInput.FormattedDuration = v)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(WheelView)
-                      .For(v => v.UserInteractionEnabled)
-                      .To(vm => vm.IsEditingTime)
-                      .WithConversion(inverseBoolConverter);
+            DurationInput.Rx().Duration()
+                .Subscribe(ViewModel.ChangeDuration.Inputs)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(WheelView)
-                      .For(v => v.MaximumStartTime)
-                      .To(vm => vm.MaximumStartTime);
+            // The wheel
 
-            bindingSet.Bind(WheelView)
-                      .For(v => v.MinimumStartTime)
-                      .To(vm => vm.MinimumStartTime);
+            ViewModel.IsEditingTime
+                .Invert()
+                .Subscribe(v => WheelView.UserInteractionEnabled = v)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(WheelView)
-                      .For(v => v.MaximumEndTime)
-                      .To(vm => vm.MaximumStopTime);
+            ViewModel.MinimumStartTime
+                .Subscribe(v => WheelView.MinimumStartTime = v)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(WheelView)
-                      .For(v => v.MinimumEndTime)
-                      .To(vm => vm.MinimumStopTime);
+            ViewModel.MaximumStartTime
+                .Subscribe(v => WheelView.MaximumStartTime = v)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(WheelView)
-                      .For(v => v.StartTime)
-                      .To(vm => vm.StartTime);
+            ViewModel.MinimumStopTime
+                .Subscribe(v => WheelView.MinimumEndTime= v)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(WheelView)
-                      .For(v => v.EndTime)
-                      .To(vm => vm.StopTime);
+            ViewModel.MaximumStopTime
+                .Subscribe(v => WheelView.MaximumEndTime = v)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(WheelView)
-                      .For(v => v.IsRunning)
-                      .To(vm => vm.IsRunning);
+            ViewModel.StartTime
+                .Subscribe(v => WheelView.StartTime = v)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Apply();
+            ViewModel.StopTime
+                .Subscribe(v => WheelView.EndTime = v)
+                .DisposedBy(disposeBag);
+
+            ViewModel.IsRunning
+                .Subscribe(v => WheelView.IsRunning = v)
+                .DisposedBy(disposeBag);
+
+            WheelView.Rx().StartTime()
+                .Subscribe(ViewModel.ChangeStartTime.Inputs)
+                .DisposedBy(disposeBag);
+
+            WheelView.Rx().EndTime()
+                .Subscribe(ViewModel.ChangeStopTime.Inputs)
+                .DisposedBy(disposeBag);
 
             // Interaction observables for analytics
 
@@ -221,8 +240,7 @@ namespace Toggl.Daneel.ViewControllers
                     (_, isStart) => isStart ? EditTimeSource.BarrelStartTime : EditTimeSource.BarrelStopTime
                  );
 
-            var durationInputChanged = Observable
-                .FromEventPattern(e => DurationInput.DurationChanged += e, e => DurationInput.DurationChanged -= e)
+            var durationInputChanged = DurationInput.Rx().Duration()
                 .SelectValue(EditTimeSource.NumpadDuration);
 
             Observable.Merge(
@@ -243,8 +261,6 @@ namespace Toggl.Daneel.ViewControllers
             if (!disposing) return;
 
             disposeBag?.Dispose();
-
-            startTimeChangingSubscription?.Dispose();
         }
 
         public override void ViewDidAppear(bool animated)
@@ -259,7 +275,7 @@ namespace Toggl.Daneel.ViewControllers
 
         public async Task<bool> Dismiss()
         {
-            await ViewModel.CloseCommand.ExecuteAsync();
+            ViewModel.Close.Execute();
             return true;
         }
 
@@ -319,12 +335,9 @@ namespace Toggl.Daneel.ViewControllers
             if (DurationInput.IsEditing)
                 DurationInput.ResignFirstResponder();
 
-            if (ViewModel.IsEditingTime)
-                ViewModel.StopEditingTimeCommand.Execute();
-        }
 
-        private void startTimeChanging(Unit _)
-            => DatePicker.Date = ViewModel.StartTime.Add(ViewModel.Duration).ToNSDate();
+            ViewModel.StopEditingTime.Execute();
+        }
     }
 }
 

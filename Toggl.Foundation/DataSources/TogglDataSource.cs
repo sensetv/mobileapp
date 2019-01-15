@@ -20,8 +20,6 @@ namespace Toggl.Foundation.DataSources
     {
         private readonly ITogglDatabase database;
 
-        private Func<ITogglDataSource, ISyncManager> createSyncManager;
-
         public TogglDataSource(
             ITogglApi api,
             ITogglDatabase database,
@@ -47,13 +45,13 @@ namespace Toggl.Foundation.DataSources
             WorkspaceFeatures = new WorkspaceFeaturesDataSource(database.WorkspaceFeatures);
             TimeEntries = new TimeEntriesDataSource(database.TimeEntries, timeService, analyticsService);
 
-            this.createSyncManager = createSyncManager;
-            CreateNewSyncManager();
+            SyncManager = createSyncManager(this);
 
             ReportsProvider = new ReportsProvider(api, database);
 
             FeedbackApi = api.Feedback;
         }
+
         public ITimeEntriesSource TimeEntries { get; }
 
         public ISingletonDataSource<IThreadSafeUser> User { get; }
@@ -77,11 +75,6 @@ namespace Toggl.Foundation.DataSources
         public IReportsProvider ReportsProvider { get; }
 
         public IFeedbackApi FeedbackApi { get; }
-
-        public void CreateNewSyncManager()
-        {
-            SyncManager = createSyncManager(this);
-        }
 
         public IObservable<bool> HasUnsyncedData()
             => Observable.Merge(
