@@ -355,10 +355,10 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public override void ViewDisappeared()
         {
             base.ViewDisappeared();
-            ViewDisappearedAsync();
+            viewDisappearedAsync();
         }
 
-        internal async Task ViewDisappearedAsync()
+        private async Task viewDisappearedAsync()
         {
             await TimeEntriesViewModel.FinilizeDelayDeleteTimeEntryIfNeeded();
         }
