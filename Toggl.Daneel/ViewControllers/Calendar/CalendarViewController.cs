@@ -63,6 +63,14 @@ namespace Toggl.Daneel.ViewControllers
                 .BindAction(ViewModel.GetStarted)
                 .DisposedBy(DisposeBag);
 
+            ViewModel.TimeTrackedToday
+                .Subscribe(TimeTrackedTodayLabel.Rx().Text())
+                .DisposedBy(DisposeBag);
+
+            ViewModel.CurrentDate
+                .Subscribe(CurrentDateLabel.Rx().Text())
+                .DisposedBy(DisposeBag);
+
             dataSource = new CalendarCollectionViewSource(
                 timeService,
                 CalendarCollectionView,
