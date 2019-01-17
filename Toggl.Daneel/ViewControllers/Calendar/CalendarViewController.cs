@@ -42,6 +42,8 @@ namespace Toggl.Daneel.ViewControllers
             base.ViewDidLoad();
 
             ExtendedNavbarView.BackgroundColor = NavigationController.NavigationBar.BackgroundColor;
+            TimeTrackedTodayLabel.Font = TimeTrackedTodayLabel.Font.GetMonospacedDigitFont();
+
             TitleLabel.Text = Resources.Welcome;
             DescriptionLabel.Text = Resources.CalendarFeatureDescription;
             GetStartedButton.SetTitle(Resources.GetStarted, UIControlState.Normal);
