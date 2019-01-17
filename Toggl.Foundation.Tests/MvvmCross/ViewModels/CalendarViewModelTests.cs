@@ -984,5 +984,96 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     });
             }
         }
+
+        public sealed class TheTimeTrackedTodayProperty : CalendarViewModelTest
+        {
+            private readonly ISubject<DurationFormat> durationFormatSubject = new Subject<DurationFormat>();
+            private readonly ISubject<TimeSpan> trackedTimeSubject = new Subject<TimeSpan>();
+
+            private static readonly TimeSpan duration = TimeSpan.FromHours(1.5);
+
+            [Theory, LogIfTooSlow]
+            [InlineData(DurationFormat.Classic, "00 sec")]
+            [InlineData(DurationFormat.Improved, "0:00:00")]
+            [InlineData(DurationFormat.Decimal, "00.00 h")]
+            public void StartsWithZero(DurationFormat format, string expectedOutput)
+            {
+                var observer = TestScheduler.CreateObserver<string>();
+                ViewModel.TimeTrackedToday.Subscribe(observer);
+
+                durationFormatSubject.OnNext(format);
+                TestScheduler.Start();
+
+                observer.Messages.First().Value.Value.Should().Be(expectedOutput);
+            }
+
+            [Theory, LogIfTooSlow]
+            [InlineData(DurationFormat.Classic, "01:30:00")]
+            [InlineData(DurationFormat.Improved, "1:30:00")]
+            [InlineData(DurationFormat.Decimal, "01.50 h")]
+            public void EmitsCorrectlyFormattedTimeBasedOnUsersPreferences(DurationFormat format, string expectedOutput)
+            {
+                var observer = TestScheduler.CreateObserver<string>();
+                ViewModel.TimeTrackedToday.Subscribe(observer);
+
+                durationFormatSubject.OnNext(format);
+                trackedTimeSubject.OnNext(duration);
+                TestScheduler.Start();
+
+                observer.Messages.Skip(1).First().Value.Value.Should().Be(expectedOutput);
+            }
+
+            protected override void AdditionalSetup()
+            {
+                var preferencesObservable =
+                    durationFormatSubject.Select(format => new MockPreferences { DurationFormat = format } as IThreadSafePreferences);
+
+                DataSource.Preferences.Current
+                    .Returns(preferencesObservable);
+                InteractorFactory.ObserveTimeTrackedToday().Execute()
+                    .Returns(trackedTimeSubject.AsObservable());
+            }
+        }
+
+        public sealed class TheCurrentDateProperty : CalendarViewModelTest
+        {
+            private readonly ISubject<DateFormat> dateFormatSubject = new Subject<DateFormat>();
+            private readonly ISubject<DateTimeOffset> dateSubject = new Subject<DateTimeOffset>();
+
+            private static readonly DateTimeOffset date = new DateTimeOffset(2019, 01, 19, 23, 50, 00, TimeSpan.FromHours(-1));
+
+            public static IEnumerable<object[]> DatesAndPreferences()
+                => new[]
+                {
+                    new object[] { DateFormat.FromLocalizedDateFormat("YYYY-MM-DD"), "2019-01-20" },
+                    new object[] { DateFormat.FromLocalizedDateFormat("DD.MM.YYYY"), "20.01.2019" },
+                    new object[] { DateFormat.FromLocalizedDateFormat("DD/MM"), "20/01" }
+                };
+
+            [Theory, LogIfTooSlow]
+            [MemberData(nameof(DatesAndPreferences))]
+            public void EmitsCorrectlyFormattedTimeBasedOnUsersPreferences(DateFormat format, string expectedOutput)
+            {
+                var observer = TestScheduler.CreateObserver<string>();
+                ViewModel.CurrentDate.Subscribe(observer);
+
+                dateFormatSubject.OnNext(format);
+                dateSubject.OnNext(date);
+                TestScheduler.Start();
+
+                observer.Messages.First().Value.Value.Should().Be(expectedOutput);
+            }
+
+            protected override void AdditionalSetup()
+            {
+                var preferencesObservable =
+                    dateFormatSubject.Select(format => new MockPreferences { DateFormat = format } as IThreadSafePreferences);
+
+                DataSource.Preferences.Current
+                    .Returns(preferencesObservable);
+                TimeService.CurrentDateTimeObservable
+                    .Returns(dateSubject.AsObservable());
+            }
+        }
     }
 }
