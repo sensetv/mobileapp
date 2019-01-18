@@ -13,7 +13,7 @@ using static Android.Content.Intent;
 namespace Toggl.Giskard
 {
     [Activity(Label = "Toggl for Devs",
-              MainLauncher = true,
+              MainLauncher = false,
               Icon = "@mipmap/ic_launcher",
               Theme = "@style/Theme.Splash",
               ScreenOrientation = ScreenOrientation.Portrait,
