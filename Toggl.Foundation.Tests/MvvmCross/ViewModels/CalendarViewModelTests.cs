@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FsCheck;
@@ -1045,15 +1047,16 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public static IEnumerable<object[]> DatesAndPreferences()
                 => new[]
                 {
-                    new object[] { DateFormat.FromLocalizedDateFormat("YYYY-MM-DD"), "2019-01-20" },
-                    new object[] { DateFormat.FromLocalizedDateFormat("DD.MM.YYYY"), "20.01.2019" },
-                    new object[] { DateFormat.FromLocalizedDateFormat("DD/MM"), "20/01" }
+                    new object[] { DateFormat.FromLocalizedDateFormat("YYYY-MM-DD") },
+                    new object[] { DateFormat.FromLocalizedDateFormat("DD.MM.YYYY") },
+                    new object[] { DateFormat.FromLocalizedDateFormat("DD/MM") }
                 };
 
             [Theory, LogIfTooSlow]
             [MemberData(nameof(DatesAndPreferences))]
-            public void EmitsCorrectlyFormattedTimeBasedOnUsersPreferences(DateFormat format, string expectedOutput)
+            public void EmitsCorrectlyFormattedTimeBasedOnUsersPreferences(DateFormat format)
             {
+                var expectedOutput = date.ToLocalTime().ToString(format.Long, CultureInfo.InvariantCulture);
                 var observer = TestScheduler.CreateObserver<string>();
                 ViewModel.CurrentDate.Subscribe(observer);
 
