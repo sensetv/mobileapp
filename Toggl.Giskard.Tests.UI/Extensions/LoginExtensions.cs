@@ -15,7 +15,7 @@ namespace Toggl.Tests.UI.Extensions
         {
             var button = app.Query(Login.LoginButton).First();
             var isButtonDisabled = !button.Enabled;
-            Assert.AreEqual(true, isButtonDisabled);
+            Assert.True(isButtonDisabled);
         }
     }
 }
