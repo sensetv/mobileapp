@@ -1861,6 +1861,18 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
         public sealed class TheSuggestionsProperty : StartTimeEntryViewModelTest
         {
+            private ProjectSuggestion getProjectSuggestion(int projectId, int workspaceId)
+            {
+                var workspace = Substitute.For<IThreadSafeWorkspace>();
+                workspace.Name.Returns($"Workspace{workspaceId}");
+                workspace.Id.Returns(workspaceId);
+                var project = Substitute.For<IThreadSafeProject>();
+                project.Name.Returns($"Project{projectId}");
+                project.Workspace.Returns(workspace);
+                project.Active.Returns(true);
+                return new ProjectSuggestion(project);
+            }
+
             [Fact, LogIfTooSlow]
             public async Task IsClearedWhenThereAreNoWordsToQuery()
             {
@@ -1904,6 +1916,35 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var suggestion = ViewModel.Suggestions[0][0];
                 suggestion.Should().BeOfType<TimeEntrySuggestion>();
                 ((TimeEntrySuggestion)suggestion).ProjectId.Should().Be(ProjectId);
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task SortsProjectsByName()
+            {
+                var suggestions = new List<ProjectSuggestion>();
+                suggestions.Add(getProjectSuggestion(3, 0));
+                suggestions.Add(getProjectSuggestion(4, 1));
+                suggestions.Add(getProjectSuggestion(1, 0));
+                suggestions.Add(getProjectSuggestion(33, 1));
+                suggestions.Add(getProjectSuggestion(10, 1));
+                var suggestionsObservable = Observable.Return(suggestions);
+                AutocompleteProvider.Query(Arg.Any<QueryInfo>()).Returns(suggestionsObservable);
+                ViewModel.Prepare();
+                TestScheduler.Start();
+
+                ViewModel.Suggestions.Should().HaveCount(2);
+                foreach (var suggestionGroup in ViewModel.Suggestions)
+                {
+                    string prevProjectName = "";
+                    foreach (var suggestion in suggestionGroup.Cast<ProjectSuggestion>())
+                    {
+                        if (suggestion.ProjectName == Resources.NoProject)
+                            continue;
+                        bool correctOrder = string.Compare(prevProjectName, suggestion.ProjectName, true) < 0;
+                        correctOrder.Should().BeTrue();
+                        prevProjectName = suggestion.ProjectName;
+                    }
+                }
             }
         }
 
