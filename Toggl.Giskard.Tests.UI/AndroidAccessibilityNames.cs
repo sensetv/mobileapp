@@ -37,6 +37,7 @@ namespace Toggl.Tests.UI
 
     public static class Main
     {
+        public const string TimeEntriesCollection = "MainRecyclerView";
         public static readonly Func<AppQuery, AppQuery> StartTimeEntryButton = x => x.Id("MainPlayButton");
         public static readonly Func<AppQuery, AppQuery> StopTimeEntryButton = x => x.Id("MainStopButton");
     }
@@ -56,5 +57,15 @@ namespace Toggl.Tests.UI
         public const string ErrorLabel = "LoginEmail";
         public const string GetLinkButton = "ResetPasswordButton";
         public const string DoneCard = "Link sent. Please, check your email to reset the password";
+    }
+
+    public static class EditTimeEntry
+    {
+        public const string EditTags = "EditTimeEntryTagsContainer";
+    }
+
+    public static class NewProject
+    {
+        public const string CreateButton = "CreateProjectButton";
     }
 }

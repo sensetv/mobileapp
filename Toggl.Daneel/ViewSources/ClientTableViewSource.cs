@@ -22,8 +22,8 @@ namespace Toggl.Daneel.ViewSources
 
         private const int rowHeight = 48;
 
-        public ClientTableViewSource() : base(
-            new ImmutableArray<SelectableClientBaseViewModel>(), ClientViewCell.Identifier)
+        public ClientTableViewSource()
+            : base(ImmutableArray<SelectableClientBaseViewModel>.Empty, ClientViewCell.Identifier)
         {
         }
 

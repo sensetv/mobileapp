@@ -16,6 +16,16 @@ Regardless of the value sent as `enabledIf` the RxAction is disabled while it's 
 
 Calling the `Execute` method will perform the underlying action, *regardless of whether there are any subscriptions to it*. The fact that it's returning an Observable is just there for the convenience, in case we want to be informed of the state of the execution of the action, as it'll emit the elements the action returns and its potential errors.
 
+## Threading and Action Factory
+
+As we want actions to return on the main thread we created a `RxActionFactory` service that simplifies the process of creating an action while passing the appropriate scheduler to it. ViewModels that want to use `RxActions` should include this dependency and call one of its methods to create `UIActions` or `InputActions` as needed.
+
+```c#
+StartTimeEntry = rxActionFactory.FromAsync<Suggestion>(suggestion => startTimeEntry(suggestion));
+```
+
+There are no methods to create `RxActions` (with input and output) because they are not used for now, but they could be added if needed.
+
 ## Public properties
 
 `RxAction` exposes the following properties:
@@ -116,6 +126,18 @@ checkEmailExist.Executing
   })
   .DisposedBy(disposeBag);
 ```
+
+An example for a `UIAction` created with the `RxActionFactory` would be something like this:
+
+```c#
+public UIAction Close { get; }
+...
+Close = rxActionFactory.FromAsync(close);
+...
+private Task close() => navigationService.Close(this, defaultResult);
+```
+
+A `UIAction` is a subclass of `RxAction` without inputs or outputs, meaning `RxAction<Unit, Unit>`
 
 ## Using it from the UI
 

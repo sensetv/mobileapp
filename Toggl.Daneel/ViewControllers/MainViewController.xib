@@ -246,6 +246,9 @@ time entries will appear here.</string>
                         </view>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <accessibility key="accessibilityConfiguration" label="TimeEntriesCollection">
+                        <bool key="isElement" value="YES"/>
+                    </accessibility>
                     <constraints>
                         <constraint firstItem="Xqe-XF-nVb" firstAttribute="centerX" secondItem="Jhd-oR-xIN" secondAttribute="centerX" id="00e-VD-Qmg"/>
                         <constraint firstItem="w5c-30-czh" firstAttribute="top" secondItem="Jhd-oR-xIN" secondAttribute="top" constant="400" id="1QN-yf-d6n"/>

@@ -3,7 +3,7 @@ using Xamarin.UITest;
 
 namespace Toggl.Tests.UI.Extensions
 {
-    public static class MainExtensions
+    public static partial class MainExtensions
     {
         public static void WaitForMainScreen(this IApp app)
         {
@@ -27,6 +27,13 @@ namespace Toggl.Tests.UI.Extensions
             app.Tap(StartTimeEntry.DoneButton);
 
             app.WaitForElement(Main.StopTimeEntryButton);
+        }
+
+        public static void PullToRefresh(this IApp app)
+        {
+            app.WaitForNoElement(query => query.Text("Synced"));
+            app.ScrollUp(Main.TimeEntriesCollection, ScrollStrategy.Gesture);
+            app.WaitForNoElement(query => query.Text("Synced"));
         }
     }
 }

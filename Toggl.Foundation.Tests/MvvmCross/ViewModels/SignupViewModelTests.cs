@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -439,6 +440,20 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         TestScheduler.Start();
                         LastTimeUsageStorage.Received().SetLogin(now);
                     }
+
+                    [Fact, LogIfTooSlow]
+                    public void FiresSuccessfulSignupEvent()
+                    {
+                        var viewModel = CreateViewModel();
+                        var observer = TestScheduler.CreateObserver<Unit>();
+                        viewModel.SuccessfulSignup.Subscribe(observer);
+
+                        viewModel.Initialize().Wait();
+                        viewModel.GoogleSignup.Execute();
+
+                        TestScheduler.Start();
+                        observer.Messages.Count.Should().Be(1);
+                    }
                 }
             }
         }
@@ -721,6 +736,23 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         TestScheduler.Start();
                         LastTimeUsageStorage.Received().SetLogin(now);
                     }
+
+                    [Fact, LogIfTooSlow]
+                    public void FiresSuccessfulSignupEvent()
+                    {
+                        var viewModel = CreateViewModel();
+                        var observer = TestScheduler.CreateObserver<Unit>();
+                        viewModel.SuccessfulSignup.Subscribe(observer);
+
+                        viewModel.Initialize().Wait();
+                        viewModel.SetEmail(ValidEmail);
+                        viewModel.SetPassword(ValidPassword);
+
+                        viewModel.Signup.Execute();
+
+                        TestScheduler.Start();
+                        observer.Messages.Count.Should().Be(1);
+                    }
                 }
 
                 public sealed class WhenSignupFails : SignupViewModelTest
@@ -834,6 +866,20 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         AnalyticsService.UnknownSignUpFailure.Received()
                             .Track(exception.GetType().FullName, exception.Message);
                         AnalyticsService.Received().TrackAnonymized(exception);
+                    }
+
+                    [Fact, LogIfTooSlow]
+                    public void DoesNotFiresSuccessfulSignupEvent()
+                    {
+                        var observer = TestScheduler.CreateObserver<Unit>();
+                        ViewModel.SuccessfulSignup.Subscribe(observer);
+
+                        prepareException(new Exception());
+
+                        ViewModel.Signup.Execute();
+
+                        TestScheduler.Start();
+                        observer.Messages.Count.Should().Be(0);
                     }
                 }
             }

@@ -1,5 +1,4 @@
-﻿using System;
-using CoreGraphics;
+﻿using CoreGraphics;
 using Foundation;
 using MvvmCross.Plugin.Color.Platforms.Ios;
 using Toggl.Foundation.MvvmCross.Helper;
@@ -7,13 +6,20 @@ using UIKit;
 
 namespace Toggl.Daneel.Autocomplete
 {
-    public sealed class TagTextAttachment : TokenTextAttachment 
+    public sealed class TagTextAttachment : TokenTextAttachment
     {
         private static readonly UIColor borderColor = Color.StartTimeEntry.TokenBorder.ToNativeColor();
 
-        public TagTextAttachment(NSAttributedString stringToDraw, nfloat textVerticalOffset, nfloat fontDescender)
-            : base (fontDescender)
+        public TagTextAttachment(string tagName, UIColor color, UIFont font)
         {
+            Image = drawToken(tagName, color, font);
+        }
+
+        private static UIImage drawToken(string tagName, UIColor color, UIFont font)
+        {
+            var stringToDraw = new NSAttributedString(
+                tagName, new UIStringAttributes { Font = font, ForegroundColor = color });
+
             var size = CalculateSize(stringToDraw);
 
             UIGraphics.BeginImageContextWithOptions(size, false, 0.0f);
@@ -24,11 +30,12 @@ namespace Toggl.Daneel.Autocomplete
                 context.SetStrokeColor(borderColor.CGColor);
                 context.StrokePath();
 
-                stringToDraw.DrawString(new CGPoint(TokenMargin + TokenPadding, textVerticalOffset));
+                var textOffset = (TokenHeight - font.LineHeight) / 2;
+                stringToDraw.DrawString(new CGPoint(TokenMargin + TokenPadding, textOffset));
 
                 var image = UIGraphics.GetImageFromCurrentImageContext();
                 UIGraphics.EndImageContext();
-                Image = image;
+                return image;
             }
         }
     }

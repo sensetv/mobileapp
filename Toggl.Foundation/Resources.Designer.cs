@@ -532,6 +532,12 @@ namespace Toggl.Foundation {
             }
         }
         
+        public static string LastYear {
+            get {
+                return ResourceManager.GetString("LastYear", resourceCulture);
+            }
+        }
+        
         public static string WorkingOnThis {
             get {
                 return ResourceManager.GetString("WorkingOnThis", resourceCulture);
@@ -1531,6 +1537,24 @@ namespace Toggl.Foundation {
         public static string APITokenResetSuccess {
             get {
                 return ResourceManager.GetString("APITokenResetSuccess", resourceCulture);
+            }
+        }
+        
+        public static string StartTimerInvocationPhrase {
+            get {
+                return ResourceManager.GetString("StartTimerInvocationPhrase", resourceCulture);
+            }
+        }
+        
+        public static string StopTimerInvocationPhrase {
+            get {
+                return ResourceManager.GetString("StopTimerInvocationPhrase", resourceCulture);
+            }
+        }
+        
+        public static string ShowReportsInvocationPhrase {
+            get {
+                return ResourceManager.GetString("ShowReportsInvocationPhrase", resourceCulture);
             }
         }
     }

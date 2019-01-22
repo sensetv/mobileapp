@@ -260,6 +260,7 @@
         android:layout_height="wrap_content">
         <TextView
             local:MvxBind="Click DoneCommand; TextColor CreateProjectButtonColor(SaveEnabled)"
+            android:id="@+id/CreateProjectButton"
             android:padding="16dp"
             android:textSize="14sp"
             android:gravity="center"

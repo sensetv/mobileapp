@@ -7,21 +7,13 @@ namespace Toggl.Daneel.Autocomplete
 {
     public abstract class TokenTextAttachment : NSTextAttachment
     {
-        public const int TokenMargin = 3;
+        private const float tokenCornerRadius = 6.0f;
+        private const float verticalTokenOffset = -5.5f;
 
         protected const int LineHeight = 24;
+        protected const int TokenMargin = 3;
         protected const int TokenPadding = 6;
-
-        private const int tokenHeight = 22;
-        private const float tokenCornerRadius = 6.0f;
-        private const int tokenVerticallOffset = (LineHeight - tokenHeight) / 2;
-
-        private readonly nfloat fontDescender;
-
-        protected TokenTextAttachment(nfloat fontDescender)
-        {
-            this.fontDescender = fontDescender;
-        }
+        protected const int TokenHeight = 22;
 
         public override CGRect GetAttachmentBounds(NSTextContainer textContainer,
             CGRect proposedLineFragment, CGPoint glyphPosition, nuint characterIndex)
@@ -29,22 +21,23 @@ namespace Toggl.Daneel.Autocomplete
             var rect = base.GetAttachmentBounds(textContainer,
                 proposedLineFragment, glyphPosition, characterIndex);
 
-            rect.Y = fontDescender;
+            rect.Y = verticalTokenOffset;
+
             return rect;
         }
 
-        protected CGSize CalculateSize(NSAttributedString stringToDraw, int extraElementsWidth = 0)
+        protected static CGSize CalculateSize(NSAttributedString stringToDraw, int extraElementsWidth = 0)
             => new CGSize(
                 stringToDraw.Size.Width + (TokenMargin * 2) + (TokenPadding * 2) + extraElementsWidth,
-                LineHeight
+                TokenHeight
             );
 
-        protected UIBezierPath CalculateTokenPath(CGSize size)
+        protected static UIBezierPath CalculateTokenPath(CGSize size)
             => UIBezierPath.FromRoundedRect(new CGRect(
                     x: TokenMargin,
-                    y: tokenVerticallOffset,
+                    y: 0,
                     width: size.Width - (TokenMargin * 2),
-                    height: tokenHeight
+                    height: TokenHeight
                ), tokenCornerRadius);
     }
 }

@@ -3,6 +3,7 @@ using Android.App;
 using Android.App.Job;
 using MvvmCross;
 using MvvmCross.Platforms.Android.Core;
+using Toggl.Foundation.Analytics;
 using Toggl.Foundation.Interactors;
 
 namespace Toggl.Giskard.Services
@@ -28,12 +29,16 @@ namespace Toggl.Giskard.Services
             disposable = interactorFactory
                 .RunBackgroundSync()
                 .Execute()
-                .Subscribe();
+                .Subscribe(_ => JobFinished(@params, false));
 
             return true;
         }
 
         public override bool OnStopJob(JobParameters @params)
-            => true;
+        {
+            Mvx.TryResolve<IAnalyticsService>(out var analyticsService);
+            analyticsService?.BackgroundSyncMustStopExcecution.Track();
+            return true;
+        }
     }
 }

@@ -167,7 +167,9 @@ namespace Toggl.Daneel.ViewControllers
             StartTimeEntryButton.Rx().BindAction(ViewModel.StartTimeEntry, _ => false, ButtonEventType.LongPress).DisposedBy(DisposeBag);
 
             CurrentTimeEntryCard.Rx().Tap()
-                .WithLatestFrom(ViewModel.CurrentRunningTimeEntry, (_, te) => te.Id)
+                .WithLatestFrom(ViewModel.CurrentRunningTimeEntry, (_, te) => te)
+                .Where(te => te != null)
+                .Select(te => te.Id)
                 .Subscribe(ViewModel.SelectTimeEntry.Inputs)
                 .DisposedBy(DisposeBag);
 

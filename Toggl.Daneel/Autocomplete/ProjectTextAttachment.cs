@@ -1,5 +1,4 @@
-﻿using System;
-using CoreGraphics;
+﻿using CoreGraphics;
 using Foundation;
 using UIKit;
 
@@ -13,9 +12,16 @@ namespace Toggl.Daneel.Autocomplete
         private const int circleWidth = dotDiameter + dotPadding;
         private const int dotYOffset = (LineHeight / 2) - dotRadius;
 
-        public ProjectTextAttachment(NSAttributedString stringToDraw, UIColor projectColor, nfloat textVerticalOffset, nfloat fontDescender)
-            : base(fontDescender)
+        public ProjectTextAttachment(string projectName, UIColor projectColor, UIFont font)
         {
+            Image = drawToken(projectName, projectColor, font);
+        }
+
+        private static UIImage drawToken(string projectName, UIColor projectColor, UIFont font)
+        {
+            var stringToDraw = new NSAttributedString(
+                projectName, new UIStringAttributes { Font = font, ForegroundColor = projectColor });
+
             var size = CalculateSize(stringToDraw, circleWidth);
 
             UIGraphics.BeginImageContextWithOptions(size, false, 0.0f);
@@ -36,11 +42,12 @@ namespace Toggl.Daneel.Autocomplete
                 context.SetFillColor(projectColor.CGColor);
                 context.FillPath();
 
-                stringToDraw.DrawString(new CGPoint(circleWidth + TokenMargin + TokenPadding, textVerticalOffset));
+                var textOffset = (TokenHeight - font.LineHeight) / 2;
+                stringToDraw.DrawString(new CGPoint(TokenMargin + TokenPadding + circleWidth, textOffset));
 
                 var image = UIGraphics.GetImageFromCurrentImageContext();
                 UIGraphics.EndImageContext();
-                Image = image;
+                return image;
             }
         }
     }

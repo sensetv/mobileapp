@@ -120,7 +120,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 .AsDriver(schedulerProvider);
             StopTimeString = Observable.CombineLatest(stop, timeFormat, toFormattedString)
                 .AsDriver(schedulerProvider);
-            DurationString = Observable.CombineLatest(duration, durationFormat, toFormattedString);
+            DurationString = Observable.CombineLatest(duration, durationFormat, toFormattedString)
+                .AsDriver(schedulerProvider);
             TimeFormat = timeFormat.AsDriver(schedulerProvider);
 
             IsRunning = isRunning.AsDriver(schedulerProvider);

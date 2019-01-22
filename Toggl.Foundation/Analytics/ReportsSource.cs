@@ -12,6 +12,7 @@ namespace Toggl.Foundation.Analytics
         ShortcutThisYear,
         Calendar,
         Initial,
-        Other
+        Other,
+        ShortcutLastYear
     }
 }

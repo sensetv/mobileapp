@@ -38,6 +38,8 @@
     <Compile Include="Extensions\SignUpExtensions.cs" />
     <Compile Include="IosAccessibilityNames.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="Extensions\StartTimeEntryExtensions.cs" />
+    <Compile Include="Extensions\MainExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

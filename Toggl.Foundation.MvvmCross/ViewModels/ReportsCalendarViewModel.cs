@@ -23,7 +23,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
     [Preserve(AllMembers = true)]
     public sealed class ReportsCalendarViewModel : MvxViewModel
     {
-        public const int MonthsToShow = 13;
+        public const int MonthsToShow = 25;
 
         private readonly string[] dayHeaders =
         {
@@ -246,7 +246,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 new ReportsCalendarLastWeekQuickSelectShortcut(timeService, beginningOfWeek),
                 new ReportsCalendarThisMonthQuickSelectShortcut(timeService),
                 new ReportsCalendarLastMonthQuickSelectShortcut(timeService),
-                new ReportsCalendarThisYearQuickSelectShortcut(timeService)
+                new ReportsCalendarThisYearQuickSelectShortcut(timeService),
+                new ReportsCalendarLastYearQuickSelectShortcut(timeService)
             };
 
         private CalendarMonth convertPageIndexToCalendarMonth(int pageIndex)

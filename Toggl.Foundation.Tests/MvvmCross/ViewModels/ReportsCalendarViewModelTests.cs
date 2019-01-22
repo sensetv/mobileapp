@@ -110,7 +110,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     typeof(ReportsCalendarLastWeekQuickSelectShortcut),
                     typeof(ReportsCalendarThisMonthQuickSelectShortcut),
                     typeof(ReportsCalendarLastMonthQuickSelectShortcut),
-                    typeof(ReportsCalendarThisYearQuickSelectShortcut)
+                    typeof(ReportsCalendarThisYearQuickSelectShortcut),
+                    typeof(ReportsCalendarLastYearQuickSelectShortcut)
                 };
                 var now = new DateTimeOffset(2020, 4, 2, 1, 1, 1, TimeSpan.Zero);
                 TimeService.CurrentDateTime.Returns(now);
@@ -153,11 +154,15 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheCurrentMonthProperty : ReportsCalendarViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [InlineData(2017, 12, 12, 2017, 12)]
-            [InlineData(2017, 5, 0, 2016, 5)]
-            [InlineData(2017, 5, 12, 2017, 5)]
-            [InlineData(2017, 5, 7, 2016, 12)]
-            [InlineData(2017, 5, 8, 2017, 1)]
+            [InlineData(2017, 12, 24, 2017, 12)]
+            [InlineData(2017, 5, 12, 2016, 5)]
+            [InlineData(2017, 5, 24, 2017, 5)]
+            [InlineData(2017, 5, 19, 2016, 12)]
+            [InlineData(2017, 5, 20, 2017, 1)]
+            [InlineData(2017, 12, 12, 2016, 12)]
+            [InlineData(2017, 5, 0, 2015, 5)]
+            [InlineData(2017, 5, 7, 2015, 12)]
+            [InlineData(2017, 5, 8, 2016, 1)]
             public void RepresentsTheCurrentPage(
                 int currentYear,
                 int currentMonth,
@@ -203,9 +208,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheRowsInCurrentMonthProperty : ReportsCalendarViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [InlineData(2017, 12, 12, BeginningOfWeek.Monday, 5)]
-            [InlineData(2017, 12, 10, BeginningOfWeek.Monday, 6)]
-            [InlineData(2017, 2, 12, BeginningOfWeek.Wednesday, 4)]
+            [InlineData(2017, 12, 24, BeginningOfWeek.Monday, 5)]
+            [InlineData(2017, 12, 22, BeginningOfWeek.Monday, 6)]
+            [InlineData(2017, 2, 24, BeginningOfWeek.Wednesday, 4)]
             public async Task ReturnsTheRowCountOfCurrentlyShownMonth(
                 int currentYear,
                 int currentMonth,

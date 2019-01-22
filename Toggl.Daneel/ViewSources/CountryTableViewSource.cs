@@ -21,7 +21,7 @@ namespace Toggl.Daneel.ViewSources
         private const int rowHeight = 48;
 
         public CountryTableViewSource()
-            : base(new ImmutableArray<SelectableCountryViewModel>(), cellIdentifier)
+            : base(ImmutableArray<SelectableCountryViewModel>.Empty, cellIdentifier)
         {
         }
 

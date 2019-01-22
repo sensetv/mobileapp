@@ -24,6 +24,7 @@ using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant.Settings;
 using Toggl.Ultrawave.Exceptions;
 using Toggl.Ultrawave.Network;
+using System.Reactive;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
@@ -65,6 +66,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly BehaviorSubject<Password> passwordSubject = new BehaviorSubject<Password>(Multivac.Password.Empty);
         private readonly BehaviorSubject<string> countryNameSubject = new BehaviorSubject<string>(Resources.SelectCountry);
         private readonly BehaviorSubject<bool> isCountryErrorVisibleSubject = new BehaviorSubject<bool>(false);
+        private readonly Subject<Unit> successfulSignupSubject = new Subject<Unit>();
 
         public IObservable<string> CountryButtonTitle { get; }
         public IObservable<bool> IsCountryErrorVisible { get; }
@@ -77,6 +79,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public IObservable<string> ErrorMessage { get; }
         public IObservable<bool> IsPasswordMasked { get; }
         public IObservable<bool> IsShowPasswordButtonVisible { get; }
+        public IObservable<Unit> SuccessfulSignup { get; }
 
         public UIAction Login { get; }
         public UIAction Signup { get; }
@@ -175,6 +178,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                     (email, password, isLoading, countryName) => email.IsValid && password.IsValid && !isLoading && (countryName != Resources.SelectCountry))
                 .DistinctUntilChanged()
                 .AsDriver(this.schedulerProvider);
+
+            SuccessfulSignup = successfulSignupSubject
+                .AsDriver(this.schedulerProvider);
         }
 
         public override void Prepare(CredentialsParameter parameter)
@@ -265,6 +271,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private async void onDataSource(ITogglDataSource dataSource)
         {
+            successfulSignupSubject.OnNext(Unit.Default);
+
             lastTimeUsageStorage.SetLogin(timeService.CurrentDateTime);
 
             await dataSource.SyncManager.ForceFullSync();

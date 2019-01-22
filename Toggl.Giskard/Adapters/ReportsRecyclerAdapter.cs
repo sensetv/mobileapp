@@ -81,6 +81,7 @@ namespace Toggl.Giskard.Adapters
             switch (holder)
             {
                 case ReportsItemCellViewHolder reportsViewHolder:
+                    reportsViewHolder.Item = currentReportsSummaryData.Segments[position - headerItemsCount];
                     reportsViewHolder.IsLastItem = position == ItemCount - 1;
                     reportsViewHolder.RecalculateSize();
                     break;

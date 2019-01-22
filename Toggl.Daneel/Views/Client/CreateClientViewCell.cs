@@ -1,6 +1,7 @@
 ﻿using System;
 using Foundation;
 using Toggl.Daneel.Cells;
+using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using UIKit;
 
@@ -23,7 +24,7 @@ namespace Toggl.Daneel.Views.Client
 
         protected override void UpdateView()
         {
-            TextLabel.Text = $"Create client \"{Item.Name.Trim()}\"";
+            TextLabel.Text = $"{Resources.CreateClient} \"{Item.Name.Trim()}\"";
         }
     }
 }

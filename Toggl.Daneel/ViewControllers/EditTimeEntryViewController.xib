@@ -350,6 +350,9 @@
                                         </view>
                                     </subviews>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <accessibility key="accessibilityConfiguration" label="EditTimeEntryTags">
+                                        <bool key="isElement" value="YES"/>
+                                    </accessibility>
                                     <constraints>
                                         <constraint firstItem="okG-ou-p4i" firstAttribute="leading" secondItem="v6N-R9-g8f" secondAttribute="leading" constant="16" id="2rj-VO-OfE"/>
                                         <constraint firstAttribute="trailing" secondItem="okG-ou-p4i" secondAttribute="trailing" constant="16" id="90Z-me-UUm"/>

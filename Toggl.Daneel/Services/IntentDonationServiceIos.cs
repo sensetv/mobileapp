@@ -14,10 +14,6 @@ namespace Toggl.Daneel.Services
 {
     public class IntentDonationServiceIos : IIntentDonationService
     {
-        private static string startTimerInvocationPhrase = "Start timer";
-        private static string stopTimerInvocationPhrase = "Stop timer";
-        private static string showReportInvocationPhrase = "Show Report";
-
         public void SetDefaultShortcutSuggestions(IWorkspace workspace)
         {
             if (!UIDevice.CurrentDevice.CheckSystemVersion(12, 0))
@@ -40,7 +36,7 @@ namespace Toggl.Daneel.Services
             if (!string.IsNullOrEmpty(timeEntry.Description))
             {
                 // If any of the tags or the project id were just created and haven't sync we ignore this action until the user repeats it
-                if (timeEntry.ProjectId < 0 || timeEntry.TagIds.Any(tagId => tagId < 0)) 
+                if (timeEntry.ProjectId < 0 || timeEntry.TagIds.Any(tagId => tagId < 0))
                 {
                     return;
                 }
@@ -53,7 +49,7 @@ namespace Toggl.Daneel.Services
             }
             else
             {
-                intent.SuggestedInvocationPhrase = startTimerInvocationPhrase;
+                intent.SuggestedInvocationPhrase = Resources.StartTimerInvocationPhrase;
             }
 
             var interaction = new INInteraction(intent, null);
@@ -68,7 +64,7 @@ namespace Toggl.Daneel.Services
             }
 
             var intent = new StopTimerIntent();
-            intent.SuggestedInvocationPhrase = stopTimerInvocationPhrase;
+            intent.SuggestedInvocationPhrase = Resources.StopTimerInvocationPhrase;
 
             var interaction = new INInteraction(intent, null);
             interaction.DonateInteraction(onCompletion);
@@ -122,7 +118,7 @@ namespace Toggl.Daneel.Services
             }
 
             var intent = new ShowReportIntent();
-            intent.SuggestedInvocationPhrase = showReportInvocationPhrase;
+            intent.SuggestedInvocationPhrase = Resources.ShowReportsInvocationPhrase;
             var interaction = new INInteraction(intent, null);
             interaction.DonateInteraction(onCompletion);
         }
@@ -160,13 +156,13 @@ namespace Toggl.Daneel.Services
         {
             var startTimerIntent = new StartTimerIntent();
             startTimerIntent.Workspace = new INObject(workspace.Id.ToString(), workspace.Name);
-            startTimerIntent.SuggestedInvocationPhrase = startTimerInvocationPhrase;
+            startTimerIntent.SuggestedInvocationPhrase = Resources.StartTimerInvocationPhrase;
 
             var stopTimerIntent = new StopTimerIntent();
-            stopTimerIntent.SuggestedInvocationPhrase = stopTimerInvocationPhrase;
+            stopTimerIntent.SuggestedInvocationPhrase = Resources.StopTimerInvocationPhrase;
 
             var showReportIntent = new ShowReportIntent();
-            showReportIntent.SuggestedInvocationPhrase = showReportInvocationPhrase;
+            showReportIntent.SuggestedInvocationPhrase = Resources.ShowReportsInvocationPhrase;
 
             return new[]
             {

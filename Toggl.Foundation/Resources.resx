@@ -258,6 +258,9 @@ Start the timer and your most used time entries will appear here.</value>
     <data name="ThisYear">
         <value>This year</value>
     </data>
+    <data name="LastYear">
+        <value>Last year</value>
+    </data>
     <data name="WorkingOnThis">
         <value>Working on this?</value>
     </data>
@@ -761,5 +764,14 @@ Use them to add keywords to your time entries.</value>
     </data>
     <data name="APITokenResetSuccess">
         <value>Your API token has been reset.</value>
+    </data>
+    <data name="StartTimerInvocationPhrase">
+        <value>Start timer</value>
+    </data>
+    <data name="StopTimerInvocationPhrase">
+        <value>Stop timer</value>
+    </data>
+    <data name="ShowReportsInvocationPhrase">
+        <value>Show Report</value>
     </data>
 </root>

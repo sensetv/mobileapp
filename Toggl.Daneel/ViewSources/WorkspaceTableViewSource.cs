@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Reactive.Linq;
@@ -19,7 +19,7 @@ namespace Toggl.Daneel.ViewSources
                 .Select(e => e.EventArgs);
 
         public WorkspaceTableViewSource()
-            : base(new ImmutableArray<SelectableWorkspaceViewModel>(), WorkspaceViewCell.Identifier)
+            : base(ImmutableArray<SelectableWorkspaceViewModel>.Empty, WorkspaceViewCell.Identifier)
         {
         }
 

@@ -206,6 +206,9 @@ namespace Toggl.Foundation.Analytics
         [AnalyticsEvent("Type", "Message", "StackTrace")]
         public IAnalyticsEvent<string, string, string> BackgroundSyncFailed { get; protected set; }
 
+        [AnalyticsEvent]
+        public IAnalyticsEvent BackgroundSyncMustStopExcecution { get; protected set; }
+
         [AnalyticsEvent("Type", "Message")]
         public IAnalyticsEvent<string, string> UnknownLoginFailure { get; protected set; }
 

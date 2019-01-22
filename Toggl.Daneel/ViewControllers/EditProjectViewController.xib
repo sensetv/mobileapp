@@ -43,6 +43,9 @@
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8A6-l5-Nhc">
                     <rect key="frame" x="305" y="0.0" width="70" height="44"/>
+                    <accessibility key="accessibilityConfiguration" label="CreateProjectButton">
+                        <bool key="isElement" value="YES"/>
+                    </accessibility>
                     <constraints>
                         <constraint firstAttribute="width" constant="70" id="8FD-jY-CZ4"/>
                         <constraint firstAttribute="height" constant="44" id="wqo-M7-HVx"/>

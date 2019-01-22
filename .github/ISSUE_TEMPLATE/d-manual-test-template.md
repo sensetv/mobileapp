@@ -1,10 +1,10 @@
 ---
-name: ":penguin: Manual Test Template"
+name: "🐧 Manual Test Template"
 about: A manual testing checklist that can be assigned to a release to track the progress of testing.
 
 ---
 
-# :penguin: Manual Test Template
+# 🐧 Manual Test Template
 
 ## Testing sign in area ##
 

@@ -11,7 +11,8 @@ namespace Toggl.Foundation.Services
         Today,
         ThisWeek,
         ThisMonth,
-        ThisYear
+        ThisYear,
+        LastYear
     }
 
     public interface IIntentDonationService

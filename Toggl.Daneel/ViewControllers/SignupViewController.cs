@@ -14,6 +14,7 @@ using Toggl.Multivac.Extensions;
 using UIKit;
 using static Toggl.Daneel.Extensions.LoginSignupViewExtensions;
 using static Toggl.Daneel.Extensions.ViewExtensions;
+using AdjustBindingsiOS;
 
 
 namespace Toggl.Daneel.ViewControllers
@@ -22,6 +23,7 @@ namespace Toggl.Daneel.ViewControllers
     public sealed partial class SignupViewController : ReactiveViewController<SignupViewModel>
     {
         private const int iPhoneSeScreenHeight = 568;
+        private const string adjustSignupEventToken = "b1qugc";
 
         private bool keyboardIsOpen = false;
 
@@ -50,6 +52,10 @@ namespace Toggl.Daneel.ViewControllers
 
             UIKeyboard.Notifications.ObserveWillShow(KeyboardWillShow);
             UIKeyboard.Notifications.ObserveWillHide(KeyboardWillHide);
+
+            ViewModel.SuccessfulSignup
+                .Subscribe(logAdjustSignupEvent)
+                .DisposedBy(DisposeBag);
 
             //Text
             ViewModel.ErrorMessage
@@ -240,6 +246,14 @@ namespace Toggl.Daneel.ViewControllers
 
         private string signupButtonTitle(bool isLoading)
             => isLoading ? "" : Resources.SignUpTitle;
+
+        private void logAdjustSignupEvent()
+        {
+            #if USE_ANALYTICS
+            var adjustEvent = ADJEvent.EventWithEventToken(adjustSignupEventToken);
+            Adjust.TrackEvent(adjustEvent);
+            #endif
+        }
     }
 }
 

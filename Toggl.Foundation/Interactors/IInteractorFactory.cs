@@ -36,6 +36,8 @@ namespace Toggl.Foundation.Interactors
 
         IInteractor<IObservable<Unit>> ObserveTimeEntriesChanges();
 
+        IInteractor<IObservable<TimeSpan>> ObserveTimeTrackedToday();
+
         #endregion
 
         #region Projects
